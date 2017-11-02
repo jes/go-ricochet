@@ -53,7 +53,12 @@ func (echobot *RicochetEchoBot) Connect(privateKeyFile string, hostname string) 
 		return chat
 	})
 
-	rc, _ := goricochet.Open(hostname)
+	rc, err := goricochet.Open(hostname)
+
+	if err != nil {
+		log.Fatalf("could not connect to %s: %v", hostname, err)
+	}
+
 	known, err := connection.HandleOutboundConnection(rc).ProcessAuthAsClient(privateKey)
 	if err == nil {
 
@@ -61,12 +66,12 @@ func (echobot *RicochetEchoBot) Connect(privateKeyFile string, hostname string) 
 
 		if !known {
 			err := rc.Do(func() error {
-				_,err := rc.RequestOpenChannel("im.ricochet.contact.request",
-				&channels.ContactRequestChannel{
-					Handler: echobot,
-					Name:    "EchoBot",
-					Message: "I LIVE 😈😈!!!!",
-				})
+				_, err := rc.RequestOpenChannel("im.ricochet.contact.request",
+					&channels.ContactRequestChannel{
+						Handler: echobot,
+						Name:    "EchoBot",
+						Message: "I LIVE 😈😈!!!!",
+					})
 				return err
 			})
 			if err != nil {
@@ -101,5 +106,5 @@ func (echobot *RicochetEchoBot) Connect(privateKeyFile string, hostname string) 
 
 func main() {
 	echoBot := new(RicochetEchoBot)
-	echoBot.Connect("private_key", "oqf7z4ot6kuejgam")
+	echoBot.Connect("private_key", "flkjmgvjloyyzlpe")
 }

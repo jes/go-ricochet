@@ -17,7 +17,7 @@ type RicochetApplication struct {
 	privateKey            *rsa.PrivateKey
 	chatMessageHandler    func(*RicochetApplicationInstance, uint32, time.Time, string)
 	chatMessageAckHandler func(*RicochetApplicationInstance, uint32)
-	l       net.Listener
+	l                     net.Listener
 }
 
 type RicochetApplicationInstance struct {
@@ -42,9 +42,9 @@ func (rai *RicochetApplicationInstance) ContactRequestError() {
 func (rai *RicochetApplicationInstance) SendChatMessage(message string) {
 	rai.connection.Do(func() error {
 		// Technically this errors afte the second time but we can ignore it.
-		rai.connection.RequestOpenChannel("im.ricochet.chat",                 
-		        &channels.ChatChannel{
-				Handler:        rai,
+		rai.connection.RequestOpenChannel("im.ricochet.chat",
+			&channels.ChatChannel{
+				Handler: rai,
 			})
 
 		channel := rai.connection.Channel("im.ricochet.chat", channels.Outbound)
@@ -119,10 +119,10 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 	rc.Process(rai)
 }
 
-func (ra *RicochetApplication) Shutdown () {
-        log.Printf("Closing")
-        ra.l.Close()
-        log.Printf("Closed")
+func (ra *RicochetApplication) Shutdown() {
+	log.Printf("Closing")
+	ra.l.Close()
+	log.Printf("Closed")
 }
 
 func (ra *RicochetApplication) Run(l net.Listener) {
@@ -130,14 +130,14 @@ func (ra *RicochetApplication) Run(l net.Listener) {
 		return
 	}
 	ra.l = l
-        var err error
+	var err error
 	for err == nil {
 		conn, err := ra.l.Accept()
 		if err == nil {
 			go ra.handleConnection(conn)
 		} else {
-		        log.Printf("Closing")
-		        return
+			log.Printf("Closing")
+			return
 		}
 	}
 }

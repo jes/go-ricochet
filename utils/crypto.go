@@ -1,17 +1,17 @@
 package utils
 
 import (
+	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
-	"io/ioutil"
 	"errors"
-	"crypto/rand"
+	"io/ioutil"
 )
 
 const (
 	InvalidPrivateKeyFileError = Error("InvalidPrivateKeyFileError")
-	RICOCHET_KEY_SIZE = 1024
+	RICOCHET_KEY_SIZE          = 1024
 )
 
 // Generate a private key for use
@@ -47,9 +47,9 @@ func ParsePrivateKey(pemData []byte) (*rsa.PrivateKey, error) {
 // turn a private key into storable string
 func PrivateKeyToString(privateKey *rsa.PrivateKey) string {
 	privateKeyBlock := pem.Block{
-		Type: "RSA PRIVATE KEY",
+		Type:    "RSA PRIVATE KEY",
 		Headers: nil,
-		Bytes: x509.MarshalPKCS1PrivateKey(privateKey),
+		Bytes:   x509.MarshalPKCS1PrivateKey(privateKey),
 	}
 
 	return string(pem.EncodeToMemory(&privateKeyBlock))
