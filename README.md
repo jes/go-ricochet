@@ -12,50 +12,42 @@ in Go.
 
 Below is a simple echo bot, which responds to any chat message. You can also find this code under `examples/echobot`
 
-                package main
+    package main
 
-                import (
-                        "github.com/s-rah/go-ricochet"
-                        "log"
-                )
+    import (
+      "github.com/s-rah/go-ricochet/application"
+      "github.com/s-rah/go-ricochet/utils"
+      "log"
+      "time"
+    )
 
-                type EchoBotService struct {
-                        goricochet.StandardRicochetService
-                }
+    func main() {
+      echobot := new(application.RicochetApplication)
+      pk, err := utils.LoadPrivateKeyFromFile("./private_key")
 
-                // Always Accept Contact Requests
-                func (ts *EchoBotService) IsKnownContact(hostname string) bool {
-                        return true
-                }
+      if err != nil {
+        log.Fatalf("error reading private key file: %v", err)
+      }
 
-                func (ts *EchoBotService) OnContactRequest(oc *goricochet.OpenConnection, channelID int32, nick string, message string) {
-                        ts.StandardRicochetService.OnContactRequest(oc, channelID, nick, message)
-                        oc.AckContactRequestOnResponse(channelID, "Accepted")
-                        oc.CloseChannel(channelID)
-                }
+      l, err := application.SetupOnion("127.0.0.1:9051", "tcp4", "", pk, 9878)
 
-                func (ebs *EchoBotService) OnChatMessage(oc *goricochet.OpenConnection, channelID int32, messageId int32, message string) {
-                        log.Printf("Received Message from %s: %s", oc.OtherHostname, message)
-                        oc.AckChatMessage(channelID, messageId)
-                        if oc.GetChannelType(6) == "none" {
-                                oc.OpenChatChannel(6)
-                        }
-                        oc.SendMessage(6, message)
-                }
+      if err != nil {
+        log.Fatalf("error setting up onion service: %v", err)
+      }
 
-                func main() {
-                        ricochetService := new(EchoBotService)
-                        ricochetService.Init("./private_key")
-                        ricochetService.Listen(ricochetService, 12345)
-                }
+      echobot.Init(pk, new(application.AcceptAllContactManager))
+      echobot.OnChatMessage(func(rai *application.RicochetApplicationInstance, id uint32, timestamp time.Time, message string) {
+        log.Printf("message from %v - %v", rai.RemoteHostname, message)
+        rai.SendChatMessage(message)
+      })
+      log.Printf("echobot listening on %s", l.Addr().String())
+      echobot.Run(l)
+    }
 
 Each automated ricochet service can extend of the `StandardRicochetService`. From there
 certain functions can be extended to fully build out a complete application.
 
-Currently GoRicochet does not establish a hidden service, so to make this service
-available to the world you will have to [set up a hidden service](https://www.torproject.org/docs/tor-hidden-service.html.en)
-
 ## Security and Usage Note
 
 This project is experimental and has not been independently reviewed. If you are
-looking for a quick and easy way to use ricochet please check out [Ricochet Protocol](https://ricochet.im).
+looking for a quick and easy way to use ricochet please check out [Ricochet IM](https://ricochet.im).
