@@ -15,7 +15,7 @@ func main() {
 		log.Fatalf("error reading private key file: %v", err)
 	}
 
-	l, err := application.SetupOnion("127.0.0.1:9051", "", pk, 9878)
+	l, err := application.SetupOnion("127.0.0.1:9051", "tcp4", "", pk, 9878)
 
 	if err != nil {
 		log.Fatalf("error setting up onion service: %v", err)
