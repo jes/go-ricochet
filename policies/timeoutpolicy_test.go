@@ -13,7 +13,7 @@ func TestTimeoutPolicy(t *testing.T) {
 	}
 	err := policy.ExecuteAction(result)
 	if err != nil {
-		t.Errorf("Action should ahve returned nil: %v", err)
+		t.Errorf("Action should have returned nil: %v", err)
 	}
 }
 

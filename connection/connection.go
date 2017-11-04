@@ -431,7 +431,7 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 		channel, found := rc.channelManager.GetChannel(id)
 
 		if !found {
-			rc.traceLog(fmt.Sprintf("channel result recived for unknown channel: %v", channel.Type, id))
+			rc.traceLog(fmt.Sprintf("channel result received for unknown channel: type:%s id:%v", channel.Type, id))
 			return
 		}
 
