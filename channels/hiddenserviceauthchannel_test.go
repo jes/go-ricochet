@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/rsa"
 	"github.com/golang/protobuf/proto"
+	"github.com/s-rah/go-ricochet/identity"
 	"github.com/s-rah/go-ricochet/utils"
 	"github.com/s-rah/go-ricochet/wire/control"
 	"testing"
@@ -71,10 +72,10 @@ func GetOpenAuthenticationChannelMessage() *Protocol_Data_Control.OpenChannel {
 }
 
 func TestAuthenticationOpenInbound(t *testing.T) {
-	privateKey, _ := utils.LoadPrivateKeyFromFile("../testing/private_key")
+	id := identity.Init("../testing/private_key")
 	opm := GetOpenAuthenticationChannelMessage()
 	authHandler := new(HiddenServiceAuthChannel)
-	authHandler.PrivateKey = privateKey
+	authHandler.Identity = id
 	channel := Channel{ID: 1}
 	response, err := authHandler.OpenInbound(&channel, opm)
 
@@ -86,14 +87,15 @@ func TestAuthenticationOpenInbound(t *testing.T) {
 			t.Errorf("Response not a Open Channel Result %v", res)
 		}
 	} else {
-		t.Errorf("HiddenServiceAuthChannel OpenOutbound Failed: %v", err)
+		t.Errorf("HiddenServiceAuthChannel OpenInbound Failed: %v", err)
 	}
 }
 
 func TestAuthenticationOpenOutbound(t *testing.T) {
-	privateKey, _ := utils.LoadPrivateKeyFromFile("../testing/private_key")
+	id := identity.Init("../testing/private_key")
 	authHandler := new(HiddenServiceAuthChannel)
-	authHandler.PrivateKey = privateKey
+	authHandler.Identity = id
+	authHandler.ServerHostname = "kwke2hntvyfqm7dr"
 	channel := Channel{ID: 1}
 	response, err := authHandler.OpenOutbound(&channel)
 
@@ -105,20 +107,20 @@ func TestAuthenticationOpenOutbound(t *testing.T) {
 			t.Errorf("Open Channel Packet not included %v", res)
 		}
 	} else {
-		t.Errorf("HiddenServiceAuthChannel OpenInbound Failed: %v", err)
+		t.Errorf("HiddenServiceAuthChannel OpenOutbound Failed: %v", err)
 	}
 
 }
 
 func TestAuthenticationOpenOutboundResult(t *testing.T) {
 
-	privateKey, _ := utils.LoadPrivateKeyFromFile("../testing/private_key")
+	id := identity.Init("../testing/private_key")
 
 	authHandlerA := new(HiddenServiceAuthChannel)
 	authHandlerB := new(HiddenServiceAuthChannel)
 
+	authHandlerA.Identity = id
 	authHandlerA.ServerHostname = "kwke2hntvyfqm7dr"
-	authHandlerA.PrivateKey = privateKey
 	authHandlerA.ClientAuthResult = func(accepted, known bool) {}
 	channelA := Channel{ID: 1, Direction: Outbound}
 	channelA.SendMessage = func(message []byte) {
@@ -130,8 +132,7 @@ func TestAuthenticationOpenOutboundResult(t *testing.T) {
 	res := new(Protocol_Data_Control.Packet)
 	proto.Unmarshal(response[:], res)
 
-	authHandlerB.ServerHostname = "kwke2hntvyfqm7dr"
-	authHandlerB.PrivateKey = privateKey
+	authHandlerB.Identity = id
 	authHandlerB.ServerAuthValid = func(hostname string, publicKey rsa.PublicKey) (allowed, known bool) { return true, true }
 	authHandlerB.ServerAuthInvalid = func(err error) { t.Error("server received invalid auth") }
 	channelB := Channel{ID: 1, Direction: Inbound}

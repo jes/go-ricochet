@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/asn1"
 	"github.com/golang/protobuf/proto"
+	"github.com/s-rah/go-ricochet/identity"
 	"github.com/s-rah/go-ricochet/utils"
 	"github.com/s-rah/go-ricochet/wire/auth"
 	"github.com/s-rah/go-ricochet/wire/control"
@@ -15,14 +16,14 @@ import (
 )
 
 const (
+	// InvalidClientCookieError - returned when the client provides a cookie with the wrong length
 	InvalidClientCookieError = utils.Error("InvalidClientCookieError")
 )
 
 // HiddenServiceAuthChannel wraps implementation of im.ricochet.auth.hidden-service"
 type HiddenServiceAuthChannel struct {
 	// PrivateKey must be set for client-side authentication channels
-	PrivateKey *rsa.PrivateKey
-	// Server Hostname must be set for client-side authentication channels
+	Identity       identity.Identity
 	ServerHostname string
 
 	// Callbacks
@@ -71,7 +72,7 @@ func (ah *HiddenServiceAuthChannel) Closed(err error) {
 // Remote -> [Open Authentication Channel] -> Local
 func (ah *HiddenServiceAuthChannel) OpenInbound(channel *Channel, oc *Protocol_Data_Control.OpenChannel) ([]byte, error) {
 
-	if ah.PrivateKey == nil {
+	if !ah.Identity.Initialized() {
 		return nil, utils.PrivateKeyNotSetError
 	}
 
@@ -93,7 +94,7 @@ func (ah *HiddenServiceAuthChannel) OpenInbound(channel *Channel, oc *Protocol_D
 // Local -> [Open Authentication Channel] -> Remote
 func (ah *HiddenServiceAuthChannel) OpenOutbound(channel *Channel) ([]byte, error) {
 
-	if ah.PrivateKey == nil {
+	if !ah.Identity.Initialized() {
 		return nil, utils.PrivateKeyNotSetError
 	}
 
@@ -122,15 +123,9 @@ func (ah *HiddenServiceAuthChannel) OpenOutboundResult(err error, crm *Protocol_
 
 			ah.AddServerCookie(serverCookie.([]byte)[:])
 
-			publicKeyBytes, _ := asn1.Marshal(rsa.PublicKey{
-				N: ah.PrivateKey.PublicKey.N,
-				E: ah.PrivateKey.PublicKey.E,
-			})
+			challenge := ah.GenChallenge(ah.Identity.Hostname(), ah.ServerHostname)
 
-			clientHostname := utils.GetTorHostname(publicKeyBytes)
-			challenge := ah.GenChallenge(clientHostname, ah.ServerHostname)
-
-			signature, err := rsa.SignPKCS1v15(nil, ah.PrivateKey, crypto.SHA256, challenge)
+			signature, err := ah.Identity.Sign(challenge)
 
 			if err != nil {
 				ah.channel.SendMessage([]byte{})
@@ -138,14 +133,14 @@ func (ah *HiddenServiceAuthChannel) OpenOutboundResult(err error, crm *Protocol_
 			}
 
 			messageBuilder := new(utils.MessageBuilder)
-			proof := messageBuilder.Proof(publicKeyBytes, signature)
+			proof := messageBuilder.Proof(ah.Identity.PublicKeyBytes(), signature)
 			ah.channel.SendMessage(proof)
 		}
 	}
 }
 
 // Packet is called for each raw packet received on this channel.
-// Input: Remote -> [Proof] -> Client
+// Input: Client -> [Proof] -> Remote
 // OR
 // Input: Remote -> [Result] -> Client
 func (ah *HiddenServiceAuthChannel) Packet(data []byte) {
@@ -160,18 +155,13 @@ func (ah *HiddenServiceAuthChannel) Packet(data []byte) {
 	if res.GetProof() != nil && ah.channel.Direction == Inbound {
 		provisionalClientHostname := utils.GetTorHostname(res.GetProof().GetPublicKey())
 
-		publicKeyBytes, err := asn1.Marshal(rsa.PublicKey{
-			N: ah.PrivateKey.PublicKey.N,
-			E: ah.PrivateKey.PublicKey.E,
-		})
-
 		if err != nil {
 			ah.ServerAuthInvalid(err)
 			ah.channel.SendMessage([]byte{})
 			return
 		}
 
-		serverHostname := utils.GetTorHostname(publicKeyBytes)
+		serverHostname := ah.Identity.Hostname()
 
 		publicKey := rsa.PublicKey{}
 		_, err = asn1.Unmarshal(res.GetProof().GetPublicKey(), &publicKey)

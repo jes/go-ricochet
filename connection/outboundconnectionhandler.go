@@ -3,6 +3,7 @@ package connection
 import (
 	"crypto/rsa"
 	"github.com/s-rah/go-ricochet/channels"
+	"github.com/s-rah/go-ricochet/identity"
 	"github.com/s-rah/go-ricochet/policies"
 	"github.com/s-rah/go-ricochet/utils"
 	"sync"
@@ -68,7 +69,7 @@ func (och *OutboundConnectionHandler) ProcessAuthAsClient(privateKey *rsa.Privat
 	err := och.connection.Do(func() error {
 		_, err := och.connection.RequestOpenChannel("im.ricochet.auth.hidden-service",
 			&channels.HiddenServiceAuthChannel{
-				PrivateKey:       privateKey,
+				Identity:         identity.Initialize("", privateKey),
 				ServerHostname:   och.connection.RemoteHostname,
 				ClientAuthResult: authCallback,
 			})

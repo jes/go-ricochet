@@ -3,6 +3,7 @@ package connection
 import (
 	"crypto/rsa"
 	"github.com/s-rah/go-ricochet/channels"
+	"github.com/s-rah/go-ricochet/identity"
 	"github.com/s-rah/go-ricochet/policies"
 	"github.com/s-rah/go-ricochet/utils"
 	"sync"
@@ -63,7 +64,7 @@ func (ich *InboundConnectionHandler) ProcessAuthAsServer(privateKey *rsa.Private
 	ach.RegisterChannelHandler("im.ricochet.auth.hidden-service",
 		func() channels.Handler {
 			return &channels.HiddenServiceAuthChannel{
-				PrivateKey:        privateKey,
+				Identity:          identity.Initialize("", privateKey),
 				ServerAuthValid:   onAuthValid,
 				ServerAuthInvalid: onAuthInvalid,
 			}

@@ -28,7 +28,7 @@ func Open(remoteHostname string) (*connection.Connection, error) {
 	return rc, nil
 }
 
-// negotiate version takes an open network connection and executes
+// NegotiateVersionOutbound takes an open network connection and executes
 // the ricochet version negotiation procedure.
 func NegotiateVersionOutbound(conn net.Conn, remoteHostname string) (*connection.Connection, error) {
 	versions := []byte{0x49, 0x4D, 0x01, 0x01}

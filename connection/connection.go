@@ -84,6 +84,9 @@ func NewOutboundConnection(conn io.ReadWriteCloser, remoteHostname string) *Conn
 	return rc
 }
 
+// TraceLog turns on debug logging, you shouldn't need to do this but if for some
+// reason ricochet isn't working, you can use this to see at what point in the
+// protcol trace ricochet is failing.
 func (rc *Connection) TraceLog(enabled bool) {
 	rc.trace = enabled
 }
