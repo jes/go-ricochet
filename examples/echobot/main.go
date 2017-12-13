@@ -4,6 +4,7 @@ import (
 	"github.com/s-rah/go-ricochet"
 	"github.com/s-rah/go-ricochet/channels"
 	"github.com/s-rah/go-ricochet/connection"
+	"github.com/s-rah/go-ricochet/identity"
 	"github.com/s-rah/go-ricochet/utils"
 	"log"
 	"time"
@@ -59,7 +60,7 @@ func (echobot *RicochetEchoBot) Connect(privateKeyFile string, hostname string) 
 		log.Fatalf("could not connect to %s: %v", hostname, err)
 	}
 
-	known, err := connection.HandleOutboundConnection(rc).ProcessAuthAsClient(privateKey)
+	known, err := connection.HandleOutboundConnection(rc).ProcessAuthAsClient(identity.Initialize("echobot", privateKey))
 	if err == nil {
 
 		go rc.Process(echobot)

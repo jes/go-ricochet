@@ -35,9 +35,9 @@ func HandleInboundConnection(c *Connection) *InboundConnectionHandler {
 // true to accept authentication and allow the connection to continue, and also returns a
 // boolean indicating whether the contact is known and recognized. Unknown contacts will
 // assume they are required to send a contact request before any other activity.
-func (ich *InboundConnectionHandler) ProcessAuthAsServer(privateKey *rsa.PrivateKey, sach func(hostname string, publicKey rsa.PublicKey) (allowed, known bool)) error {
+func (ich *InboundConnectionHandler) ProcessAuthAsServer(identity identity.Identity, sach func(hostname string, publicKey rsa.PublicKey) (allowed, known bool)) error {
 
-	if privateKey == nil {
+	if !identity.Initialized() {
 		return utils.PrivateKeyNotSetError
 	}
 
@@ -64,7 +64,7 @@ func (ich *InboundConnectionHandler) ProcessAuthAsServer(privateKey *rsa.Private
 	ach.RegisterChannelHandler("im.ricochet.auth.hidden-service",
 		func() channels.Handler {
 			return &channels.HiddenServiceAuthChannel{
-				Identity:          identity.Initialize("", privateKey),
+				Identity:          identity,
 				ServerAuthValid:   onAuthValid,
 				ServerAuthInvalid: onAuthInvalid,
 			}

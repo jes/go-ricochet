@@ -1,7 +1,6 @@
 package connection
 
 import (
-	"crypto/rsa"
 	"github.com/s-rah/go-ricochet/channels"
 	"github.com/s-rah/go-ricochet/identity"
 	"github.com/s-rah/go-ricochet/policies"
@@ -23,7 +22,7 @@ func HandleOutboundConnection(c *Connection) *OutboundConnectionHandler {
 }
 
 // ProcessAuthAsClient blocks until authentication has succeeded or failed with the
-// provided privateKey, or the connection is closed. A non-nil error is returned in all
+// provided identity, or the connection is closed. A non-nil error is returned in all
 // cases other than successful authentication.
 //
 // ProcessAuthAsClient cannot be called at the same time as any other call to a Porcess
@@ -33,9 +32,9 @@ func HandleOutboundConnection(c *Connection) *OutboundConnectionHandler {
 // For successful authentication, the `known` return value indicates whether the peer
 // accepts us as a known contact. Unknown contacts will generally need to send a contact
 // request before any other activity.
-func (och *OutboundConnectionHandler) ProcessAuthAsClient(privateKey *rsa.PrivateKey) (bool, error) {
+func (och *OutboundConnectionHandler) ProcessAuthAsClient(identity identity.Identity) (bool, error) {
 
-	if privateKey == nil {
+	if !identity.Initialized() {
 		return false, utils.PrivateKeyNotSetError
 	}
 
@@ -69,7 +68,7 @@ func (och *OutboundConnectionHandler) ProcessAuthAsClient(privateKey *rsa.Privat
 	err := och.connection.Do(func() error {
 		_, err := och.connection.RequestOpenChannel("im.ricochet.auth.hidden-service",
 			&channels.HiddenServiceAuthChannel{
-				Identity:         identity.Initialize("", privateKey),
+				Identity:         identity,
 				ServerHostname:   och.connection.RemoteHostname,
 				ClientAuthResult: authCallback,
 			})

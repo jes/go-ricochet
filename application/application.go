@@ -5,6 +5,7 @@ import (
 	"github.com/s-rah/go-ricochet"
 	"github.com/s-rah/go-ricochet/channels"
 	"github.com/s-rah/go-ricochet/connection"
+	"github.com/s-rah/go-ricochet/identity"
 	"log"
 	"net"
 	"time"
@@ -92,7 +93,7 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 
 	ich := connection.HandleInboundConnection(rc)
 
-	err = ich.ProcessAuthAsServer(ra.privateKey, ra.contactManager.LookupContact)
+	err = ich.ProcessAuthAsServer(identity.Initialize("", ra.privateKey), ra.contactManager.LookupContact)
 	if err != nil {
 		log.Printf("There was an error")
 		conn.Close()

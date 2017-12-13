@@ -32,6 +32,14 @@ func NotRicochetServer() {
 	conn.Close()
 }
 
+func RicochetServer() error {
+	ln, _ := net.Listen("tcp", "127.0.0.1:11003")
+	conn, _ := ln.Accept()
+	_, err := NegotiateVersionInbound(conn)
+	conn.Close()
+	return err
+}
+
 func TestRicochet(t *testing.T) {
 	go SimpleServer()
 	// Wait for Server to Initialize
@@ -45,6 +53,21 @@ func TestRicochet(t *testing.T) {
 		return
 	}
 	t.Errorf("RicochetProtocol: Open Failed: %v", err)
+}
+
+func TestNegotiateInbound(t *testing.T) {
+	go func() {
+		err := RicochetServer()
+		if err != nil {
+			t.Errorf("RicochetProtocol: Inbound Negotiation Test Should have Succeed: %v", err)
+		}
+	}()
+
+	time.Sleep(time.Second)
+	_, err := Open("127.0.0.1:11003|abcdefghijklmno.onion")
+	if err != nil {
+		t.Errorf("RicochetProtocol: Inbound Negotiation Test Should have Succeed: %v", err)
+	}
 }
 
 func TestBadVersionNegotiation(t *testing.T) {
