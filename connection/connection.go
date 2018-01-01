@@ -44,6 +44,7 @@ type Connection struct {
 	IsInbound      bool
 	Authentication map[string]bool
 	RemoteHostname string
+	SupportChannels []string
 }
 
 func (rc *Connection) init() {
@@ -458,16 +459,31 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 			rc.SendRicochetPacket(rc.Conn, 0, raw)
 		}
 	} else if res.GetEnableFeatures() != nil {
-		rc.traceLog("received features enabled packet")
+		rc.traceLog("received enable features packet")
+		featuresToEnable := res.GetEnableFeatures().GetFeature()
+		supportChannels := handler.GetSupportedChannelTypes()
+		result := []string{}
+		for _,v := range featuresToEnable {
+		        for _,s := range supportChannels {
+		                if v == s {
+		                        result = append(result, v)
+		                }
+		        }
+		}
 		messageBuilder := new(utils.MessageBuilder)
-		raw := messageBuilder.FeaturesEnabled([]string{})
-		rc.traceLog("sending featured enabled empty response")
+		raw := messageBuilder.FeaturesEnabled(result)
+		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", result))
 		rc.SendRicochetPacket(rc.Conn, 0, raw)
 	} else if res.GetFeaturesEnabled() != nil {
-		// TODO We should never send out an enabled features
-		// request.
-		rc.traceLog("sending unsolicited features enabled response")
+	        rc.SupportChannels = res.GetFeaturesEnabled().GetFeature()
+	        rc.traceLog(fmt.Sprintf("connection supports: %v", rc.SupportChannels))
 	}
+}
+
+func (rc *Connection) EnableFeatures(features []string) {
+	messageBuilder := new(utils.MessageBuilder)
+	raw := messageBuilder.EnableFeatures(features)
+	rc.SendRicochetPacket(rc.Conn, 0, raw)     
 }
 
 func (rc *Connection) traceLog(message string) {

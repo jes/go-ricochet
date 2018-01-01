@@ -25,4 +25,6 @@ type Handler interface {
 	// A non-nil return from this function does not guarantee that the channel
 	// will be opened.
 	OnOpenChannelRequest(ctype string) (channels.Handler, error)
+	
+	GetSupportedChannelTypes() []string
 }

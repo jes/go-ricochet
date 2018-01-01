@@ -23,9 +23,8 @@ func main() {
 
 	commandbot.Init(pk, new(application.AcceptAllContactManager))
 	commandbot.OnChatMessage(func(rai *application.RicochetApplicationInstance, id uint32, timestamp time.Time, message string) {
-		if message == "/" {
-			rai.SendChatMessage(message)
-		}
+		log.Printf("message from %v - %v", rai.RemoteHostname, message)
+		go echobot.Broadcast(rai.RemoteHostname + " " + message)
 	})
 	log.Printf("commandbot listening on %s", l.Addr().String())
 	commandbot.Run(l)

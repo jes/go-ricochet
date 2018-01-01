@@ -24,7 +24,7 @@ func main() {
 	echobot.Init(pk, new(application.AcceptAllContactManager))
 	echobot.OnChatMessage(func(rai *application.RicochetApplicationInstance, id uint32, timestamp time.Time, message string) {
 		log.Printf("message from %v - %v", rai.RemoteHostname, message)
-		rai.SendChatMessage(message)
+		go echobot.Broadcast(rai.RemoteHostname + " " + message)
 	})
 	log.Printf("echobot listening on %s", l.Addr().String())
 	echobot.Run(l)

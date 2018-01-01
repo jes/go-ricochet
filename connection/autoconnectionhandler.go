@@ -34,6 +34,14 @@ func (ach *AutoConnectionHandler) OnReady(oc *Connection) {
 func (ach *AutoConnectionHandler) OnClosed(err error) {
 }
 
+func (ach *AutoConnectionHandler) GetSupportedChannelTypes() []string {
+        supported := []string{}
+        for k,_ := range ach.handlerMap {
+                supported = append(supported, k)
+        }
+        return supported
+}
+
 // RegisterChannelHandler ...
 func (ach *AutoConnectionHandler) RegisterChannelHandler(ctype string, handler func() channels.Handler) {
 	_, exists := ach.handlerMap[ctype]

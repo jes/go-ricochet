@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"time"
+	"sync"
 )
 
 // RicochetApplication bundles many useful constructs that are
@@ -18,7 +19,11 @@ type RicochetApplication struct {
 	privateKey            *rsa.PrivateKey
 	chatMessageHandler    func(*RicochetApplicationInstance, uint32, time.Time, string)
 	chatMessageAckHandler func(*RicochetApplicationInstance, uint32)
+	onConnected func(*RicochetApplicationInstance)
+	onLeave func(*RicochetApplicationInstance)
 	l                     net.Listener
+	instances             []*RicochetApplicationInstance
+	lock                  sync.Mutex
 }
 
 type RicochetApplicationInstance struct {
@@ -27,6 +32,7 @@ type RicochetApplicationInstance struct {
 	RemoteHostname        string
 	ChatMessageHandler    func(*RicochetApplicationInstance, uint32, time.Time, string)
 	ChatMessageAckHandler func(*RicochetApplicationInstance, uint32)
+	OnLeave func(*RicochetApplicationInstance)
 }
 
 func (rai *RicochetApplicationInstance) ContactRequest(name string, message string) string {
@@ -83,6 +89,14 @@ func (ra *RicochetApplication) OnChatMessageAck(call func(*RicochetApplicationIn
 	ra.chatMessageAckHandler = call
 }
 
+func (ra *RicochetApplication) OnConnected(call func(*RicochetApplicationInstance)) {
+	ra.onConnected = call
+}
+
+func (ra *RicochetApplication) OnLeave(call func(*RicochetApplicationInstance)) {
+	ra.onLeave = call
+}
+
 func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 	rc, err := goricochet.NegotiateVersionInbound(conn)
 	if err != nil {
@@ -99,13 +113,14 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 		conn.Close()
 		return
 	}
-
+        rc.TraceLog(true)
 	rai := new(RicochetApplicationInstance)
 	rai.Init()
 	rai.RemoteHostname = rc.RemoteHostname
 	rai.connection = rc
 	rai.ChatMessageHandler = ra.chatMessageHandler
 	rai.ChatMessageAckHandler = ra.chatMessageAckHandler
+	rai.OnLeave = ra.onLeave
 
 	rai.RegisterChannelHandler("im.ricochet.contact.request", func() channels.Handler {
 		contact := new(channels.ContactRequestChannel)
@@ -117,7 +132,23 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 		chat.Handler = rai
 		return chat
 	})
+	ra.lock.Lock()
+	ra.instances = append(ra.instances, rai)
+	ra.lock.Unlock()
+	go ra.onConnected(rai)
 	rc.Process(rai)
+}
+
+func (rai *RicochetApplicationInstance)  OnClosed(err error) {
+        rai.OnLeave(rai)
+}
+
+func (ra *RicochetApplication) Broadcast(message string) {
+        ra.lock.Lock()
+        for _,rai := range ra.instances {
+                rai.SendChatMessage(message)
+        }
+        ra.lock.Unlock()
 }
 
 func (ra *RicochetApplication) Shutdown() {
