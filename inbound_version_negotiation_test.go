@@ -1,10 +1,10 @@
 package goricochet
 
 import (
+	"github.com/s-rah/go-ricochet/utils"
 	"io"
 	"net"
 	"testing"
-	"github.com/s-rah/go-ricochet/utils"
 )
 
 func TestBadProtcolLength(t *testing.T) {

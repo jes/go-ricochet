@@ -8,8 +8,8 @@ import (
 	"github.com/s-rah/go-ricochet/identity"
 	"log"
 	"net"
-	"time"
 	"sync"
+	"time"
 )
 
 // RicochetApplication bundles many useful constructs that are
@@ -19,8 +19,8 @@ type RicochetApplication struct {
 	privateKey            *rsa.PrivateKey
 	chatMessageHandler    func(*RicochetApplicationInstance, uint32, time.Time, string)
 	chatMessageAckHandler func(*RicochetApplicationInstance, uint32)
-	onConnected func(*RicochetApplicationInstance)
-	onLeave func(*RicochetApplicationInstance)
+	onConnected           func(*RicochetApplicationInstance)
+	onLeave               func(*RicochetApplicationInstance)
 	l                     net.Listener
 	instances             []*RicochetApplicationInstance
 	lock                  sync.Mutex
@@ -32,7 +32,7 @@ type RicochetApplicationInstance struct {
 	RemoteHostname        string
 	ChatMessageHandler    func(*RicochetApplicationInstance, uint32, time.Time, string)
 	ChatMessageAckHandler func(*RicochetApplicationInstance, uint32)
-	OnLeave func(*RicochetApplicationInstance)
+	OnLeave               func(*RicochetApplicationInstance)
 }
 
 func (rai *RicochetApplicationInstance) ContactRequest(name string, message string) string {
@@ -113,7 +113,7 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 		conn.Close()
 		return
 	}
-        rc.TraceLog(true)
+	rc.TraceLog(true)
 	rai := new(RicochetApplicationInstance)
 	rai.Init()
 	rai.RemoteHostname = rc.RemoteHostname
@@ -139,16 +139,16 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 	rc.Process(rai)
 }
 
-func (rai *RicochetApplicationInstance)  OnClosed(err error) {
-        rai.OnLeave(rai)
+func (rai *RicochetApplicationInstance) OnClosed(err error) {
+	rai.OnLeave(rai)
 }
 
 func (ra *RicochetApplication) Broadcast(message string) {
-        ra.lock.Lock()
-        for _,rai := range ra.instances {
-                rai.SendChatMessage(message)
-        }
-        ra.lock.Unlock()
+	ra.lock.Lock()
+	for _, rai := range ra.instances {
+		rai.SendChatMessage(message)
+	}
+	ra.lock.Unlock()
 }
 
 func (ra *RicochetApplication) Shutdown() {

@@ -35,11 +35,11 @@ func (ach *AutoConnectionHandler) OnClosed(err error) {
 }
 
 func (ach *AutoConnectionHandler) GetSupportedChannelTypes() []string {
-        supported := []string{}
-        for k,_ := range ach.handlerMap {
-                supported = append(supported, k)
-        }
-        return supported
+	supported := []string{}
+	for k := range ach.handlerMap {
+		supported = append(supported, k)
+	}
+	return supported
 }
 
 // RegisterChannelHandler ...

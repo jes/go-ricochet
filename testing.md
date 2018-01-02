@@ -10,7 +10,7 @@ other for outbound connections.
 
 ## Version Negotiation
 
-File: [ricochet_test.go](./inbound_version_negotiation_test.go)
+File: [inbound_version_negotiation_test.go](./inbound_version_negotiation_test.go)
 
 ### Invalid Protocol
 
@@ -33,3 +33,17 @@ Assuming the inbound listener receives a valid protocol message, and that messag
 contains a known supported version. Then the connection should remain open.
 
 # Outbound
+
+File: [outbound_version_negotiation_test.go](./outbound_version_negotiation_test.go)
+
+### No Compatible Version Found
+
+If the outbound connection receives a response that does not match one of the versions
+they sent out in their supporting list. Then then must close the connection `TestInvalidResponse`
+
+
+### Successful Version Negotiation 
+
+Assuming the outbound connection receives a valid protocol message, and that message
+contains a known supported version. Then the connection should remain open.
+

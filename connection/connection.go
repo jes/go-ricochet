@@ -40,10 +40,10 @@ type Connection struct {
 	// it for anything else. See those functions for an explanation.
 	processBlockMutex sync.Mutex
 
-	Conn           io.ReadWriteCloser
-	IsInbound      bool
-	Authentication map[string]bool
-	RemoteHostname string
+	Conn            io.ReadWriteCloser
+	IsInbound       bool
+	Authentication  map[string]bool
+	RemoteHostname  string
 	SupportChannels []string
 }
 
@@ -463,27 +463,27 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 		featuresToEnable := res.GetEnableFeatures().GetFeature()
 		supportChannels := handler.GetSupportedChannelTypes()
 		result := []string{}
-		for _,v := range featuresToEnable {
-		        for _,s := range supportChannels {
-		                if v == s {
-		                        result = append(result, v)
-		                }
-		        }
+		for _, v := range featuresToEnable {
+			for _, s := range supportChannels {
+				if v == s {
+					result = append(result, v)
+				}
+			}
 		}
 		messageBuilder := new(utils.MessageBuilder)
 		raw := messageBuilder.FeaturesEnabled(result)
 		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", result))
 		rc.SendRicochetPacket(rc.Conn, 0, raw)
 	} else if res.GetFeaturesEnabled() != nil {
-	        rc.SupportChannels = res.GetFeaturesEnabled().GetFeature()
-	        rc.traceLog(fmt.Sprintf("connection supports: %v", rc.SupportChannels))
+		rc.SupportChannels = res.GetFeaturesEnabled().GetFeature()
+		rc.traceLog(fmt.Sprintf("connection supports: %v", rc.SupportChannels))
 	}
 }
 
 func (rc *Connection) EnableFeatures(features []string) {
 	messageBuilder := new(utils.MessageBuilder)
 	raw := messageBuilder.EnableFeatures(features)
-	rc.SendRicochetPacket(rc.Conn, 0, raw)     
+	rc.SendRicochetPacket(rc.Conn, 0, raw)
 }
 
 func (rc *Connection) traceLog(message string) {
