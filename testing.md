@@ -10,7 +10,7 @@ links it to the automated test that exercises that functionality.
 
 File: [iricochet_test.go](./ricochet_test.go)
 
-This stub test exercises the Open() function. `TestRicochetOpen`, `TestRicochetOpenWithError`.
+This stub test exercises the Open() function. `TestRicochetOpen`, and in cases where the server returns a bad version, `TestRicochetOpenWithError`, and where there is no server at all `TestRicochetOpenWithNoServer` - in both cases Open should return an error.
 
 ## Inbound
 

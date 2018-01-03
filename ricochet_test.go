@@ -52,3 +52,10 @@ func TestRicochetOpenWithError(t *testing.T) {
 		t.Errorf("Open should have failed because of bad version negotiation.")
 	}
 }
+
+func TestRicochetOpenWithNoServer(t *testing.T) {
+	_, err := Open("127.0.0.1:11002|abcdefghijklmno.onion")
+	if err == nil {
+		t.Errorf("Open should have failed because of bad version negotiation.")
+	}
+}
