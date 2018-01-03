@@ -3,12 +3,16 @@
 This documents outlines each scenario this library must correctly handle and
 links it to the automated test that exercises that functionality.
 
-We separate this document into two sections, one for inbound connections, and the
-other for outbound connections.
 
-# Inbound
+# Version Negotiation
 
-## Version Negotiation
+## Open
+
+File: [iricochet_test.go](./ricochet_test.go)
+
+This stub test exercises the Open() function. `TestRicochetOpen`, `TestRicochetOpenWithError`.
+
+## Inbound
 
 File: [inbound_version_negotiation_test.go](./inbound_version_negotiation_test.go)
 
@@ -30,20 +34,19 @@ supported versions. Then is must close the connection. `TestNoCompatibleVersions
 ### Successful Version Negotiation 
 
 Assuming the inbound listener receives a valid protocol message, and that message
-contains a known supported version. Then the connection should remain open.
+contains a known supported version. Then the connection should remain open. `TestNegotiateInboundVersions`
 
-# Outbound
+## Outbound
 
 File: [outbound_version_negotiation_test.go](./outbound_version_negotiation_test.go)
 
 ### No Compatible Version Found
 
 If the outbound connection receives a response that does not match one of the versions
-they sent out in their supporting list. Then then must close the connection `TestInvalidResponse`
-
+they sent out in their supporting list. Then then must close the connection `TestInvalidResponse` , `TestInvalidServer`
 
 ### Successful Version Negotiation 
 
 Assuming the outbound connection receives a valid protocol message, and that message
-contains a known supported version. Then the connection should remain open.
+contains a known supported version. Then the connection should remain open. `TestOutboundVersionNegotiation`
 

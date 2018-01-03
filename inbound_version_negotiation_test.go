@@ -7,6 +7,32 @@ import (
 	"testing"
 )
 
+func TestNegotiateInboundVersions(t *testing.T) {
+
+	connect := func() {
+		conn, err := net.Dial("tcp", ":4000")
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer conn.Close()
+
+		conn.Write([]byte{0x49, 0x4D, 0x01, 0x01})
+	}
+
+	l, err := net.Listen("tcp", ":4000")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer l.Close()
+	go connect()
+	conn, err := l.Accept()
+	_, err = NegotiateVersionInbound(conn)
+	if err != nil {
+		t.Errorf("Expected Success Got %v", err)
+	}
+
+}
+
 func TestBadProtcolLength(t *testing.T) {
 
 	connect := func() {
