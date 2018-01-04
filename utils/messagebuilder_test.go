@@ -24,9 +24,60 @@ func TestOpenAuthenticationChannel(t *testing.T) {
 	// TODO: More Indepth Test Of Output
 }
 
+func TestAckOpenChannel(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	messageBuilder.AckOpenChannel(1)
+	// TODO: More Indepth Test Of Output
+}
+
+func TestAuthProof(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	key := make([]byte, 32)
+	proof := make([]byte, 32)
+	messageBuilder.Proof(key, proof)
+	// TODO: More Indepth Test Of Output
+}
+
+func TestAuthResult(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	messageBuilder.AuthResult(true, true)
+	// TODO: More Indepth Test Of Output
+}
+
+func TestConfirmAuthChannel(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	cookie := [16]byte{}
+	messageBuilder.ConfirmAuthChannel(0, cookie)
+	// TODO: More Indepth Test Of Output
+}
+
 func TestChatMessage(t *testing.T) {
 	messageBuilder := new(MessageBuilder)
 	messageBuilder.ChatMessage("Hello World", 0, 0)
+	// TODO: More Indepth Test Of Output
+}
+
+func TestRejectOpenChannel(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	messageBuilder.RejectOpenChannel(1, "error")
+	// TODO: More Indepth Test Of Output
+}
+
+func TestAckChatMessage(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	messageBuilder.AckChatMessage(1, true)
+	// TODO: More Indepth Test Of Output
+}
+
+func TestReplyToContactRequestOnResponse(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	messageBuilder.ReplyToContactRequestOnResponse(1, "Accepted")
+	// TODO: More Indepth Test Of Output
+}
+
+func TestReplyToContactRequest(t *testing.T) {
+	messageBuilder := new(MessageBuilder)
+	messageBuilder.ReplyToContactRequest(1, "Accepted")
 	// TODO: More Indepth Test Of Output
 }
 
