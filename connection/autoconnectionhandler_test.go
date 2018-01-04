@@ -35,4 +35,9 @@ func TestInit(t *testing.T) {
 	} else {
 		t.Errorf("Failed to build handler: %v", err)
 	}
+
+	types := ach.GetSupportedChannelTypes()
+	if len(types) != 1 {
+		t.Errorf("Expected only im.ricochet.auth.hidden-service to be supported instead got: %v", types)
+	}
 }

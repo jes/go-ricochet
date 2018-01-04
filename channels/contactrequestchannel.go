@@ -125,7 +125,6 @@ func (crc *ContactRequestChannel) OpenOutboundResult(err error, crm *Protocol_Da
 			}
 		}
 	}
-	crc.channel.SendMessage([]byte{})
 }
 
 // SendResponse sends a contact request status response to the requester.
