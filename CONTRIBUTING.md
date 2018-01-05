@@ -38,8 +38,7 @@ Format your code (the path might be slightly different):
 Run the following commands, and address any issues which arise:
 
 * `go vet github.com/s-rah/go-ricochet/...`
-* `golint github.com/s-rah/go-ricochet`
-* `golint github.com/s-rah/go-ricochet/utils`
+* `/golint application/ channels/ connection/ examples/ identity/ policies/ testing/ utils`
 
 ## 4. Code Review
 

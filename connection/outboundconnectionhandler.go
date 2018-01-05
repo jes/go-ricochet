@@ -88,7 +88,3 @@ func (och *OutboundConnectionHandler) ProcessAuthAsClient(identity identity.Iden
 	}
 	return false, utils.ServerRejectedClientConnectionError
 }
-
-func (och *OutboundConnectionHandler) GetSupportChannels() {
-
-}

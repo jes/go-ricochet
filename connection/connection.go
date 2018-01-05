@@ -480,12 +480,16 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 	}
 }
 
+// EnableFeatures sends an EnableFeatures messages which includes the
+// list of `features`
 func (rc *Connection) EnableFeatures(features []string) {
 	messageBuilder := new(utils.MessageBuilder)
 	raw := messageBuilder.EnableFeatures(features)
 	rc.SendRicochetPacket(rc.Conn, 0, raw)
 }
 
+// traceLog is an internal function which only logs messages
+// if the connection is configured to log.
 func (rc *Connection) traceLog(message string) {
 	if rc.trace {
 		log.Printf(message)

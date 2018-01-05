@@ -34,6 +34,7 @@ func (ach *AutoConnectionHandler) OnReady(oc *Connection) {
 func (ach *AutoConnectionHandler) OnClosed(err error) {
 }
 
+// GetSupportedChannelTypes returns a list of channel types that are registered with the handler.
 func (ach *AutoConnectionHandler) GetSupportedChannelTypes() []string {
 	supported := []string{}
 	for k := range ach.handlerMap {
