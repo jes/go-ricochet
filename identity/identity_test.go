@@ -8,6 +8,6 @@ import (
 func TestIdentity(t *testing.T) {
 	id := identity.Init("../testing/private_key")
 	if id.Hostname() != "kwke2hntvyfqm7dr" {
-		t.Errorf("Expected %v as Hostname() got: ", "kwke2hntvyfqm7dr", id.Hostname())
+		t.Errorf("Expected %v as Hostname() got: %v", "kwke2hntvyfqm7dr", id.Hostname())
 	}
 }
