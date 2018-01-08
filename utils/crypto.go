@@ -10,13 +10,16 @@ import (
 )
 
 const (
+	// InvalidPrivateKeyFileError is a library error, thrown when the given key file fials to load
 	InvalidPrivateKeyFileError = Error("InvalidPrivateKeyFileError")
-	RICOCHET_KEY_SIZE          = 1024
+
+	// RicochetKeySize - tor onion services currently use rsa key sizes of 1024 bits
+	RicochetKeySize = 1024
 )
 
-// Generate a private key for use
+// GeneratePrivateKey generates a new private key for use
 func GeneratePrivateKey() (*rsa.PrivateKey, error) {
-	privateKey, err := rsa.GenerateKey(rand.Reader, RICOCHET_KEY_SIZE)
+	privateKey, err := rsa.GenerateKey(rand.Reader, RicochetKeySize)
 	if err != nil {
 		return nil, errors.New("Could not generate key: " + err.Error())
 	}
@@ -34,7 +37,7 @@ func LoadPrivateKeyFromFile(filename string) (*rsa.PrivateKey, error) {
 	return ParsePrivateKey(pemData)
 }
 
-// Convert a private key string to a usable private key
+// ParsePrivateKey Convert a private key string to a usable private key
 func ParsePrivateKey(pemData []byte) (*rsa.PrivateKey, error) {
 	block, _ := pem.Decode(pemData)
 	if block == nil || block.Type != "RSA PRIVATE KEY" {
@@ -44,7 +47,7 @@ func ParsePrivateKey(pemData []byte) (*rsa.PrivateKey, error) {
 	return x509.ParsePKCS1PrivateKey(block.Bytes)
 }
 
-// turn a private key into storable string
+// PrivateKeyToString turns a private key into storable string
 func PrivateKeyToString(privateKey *rsa.PrivateKey) string {
 	privateKeyBlock := pem.Block{
 		Type:    "RSA PRIVATE KEY",

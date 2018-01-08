@@ -7,9 +7,12 @@ import (
 )
 
 const (
+	// CannotResolveLocalTCPAddressError is thrown when a local ricochet connection has the wrong format.
 	CannotResolveLocalTCPAddressError = Error("CannotResolveLocalTCPAddressError")
-	CannotDialLocalTCPAddressError    = Error("CannotDialLocalTCPAddressError")
-	CannotDialRicochetAddressError    = Error("CannotDialRicochetAddressError")
+	// CannotDialLocalTCPAddressError is thrown when a connection to a local ricochet address fails.
+	CannotDialLocalTCPAddressError = Error("CannotDialLocalTCPAddressError")
+	// CannotDialRicochetAddressError is thrown when a connection to a ricochet address fails.
+	CannotDialRicochetAddressError = Error("CannotDialRicochetAddressError")
 )
 
 // NetworkResolver allows a client to resolve various hostnames to connections
