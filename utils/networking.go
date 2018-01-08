@@ -7,11 +7,11 @@ import (
 )
 
 const (
-        // InvalidPacketLengthError is returned whenever ricochet receives a packet too small or too large to conform to the spec.
+	// InvalidPacketLengthError is returned whenever ricochet receives a packet too small or too large to conform to the spec.
 	InvalidPacketLengthError = Error("InvalidPacketLengthError")
-	
+
 	// InvalidChannelIDError channels must be between 0 and 65535
-	InvalidChannelIDError    = Error("InvalidChannelIDError")
+	InvalidChannelIDError = Error("InvalidChannelIDError")
 )
 
 // RicochetData is a structure containing the raw data and the channel it the
