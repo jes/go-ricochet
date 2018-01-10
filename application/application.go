@@ -27,6 +27,7 @@ func (ra *RicochetApplication) Init(pk *rsa.PrivateKey, af ApplicationInstanceFa
 	ra.contactManager = cm
 }
 
+// TODO: Reimplement OnJoin, OnLeave Events.
 func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 	rc, err := goricochet.NegotiateVersionInbound(conn)
 	if err != nil {
@@ -60,9 +61,7 @@ func (ra *RicochetApplication) Broadcast(do func(rai *ApplicationInstance)) {
 }
 
 func (ra *RicochetApplication) Shutdown() {
-	log.Printf("Closing")
 	ra.l.Close()
-	log.Printf("Closed")
 }
 
 func (ra *RicochetApplication) Run(l net.Listener) {
@@ -76,7 +75,6 @@ func (ra *RicochetApplication) Run(l net.Listener) {
 		if err == nil {
 			go ra.handleConnection(conn)
 		} else {
-			log.Printf("Closing")
 			return
 		}
 	}

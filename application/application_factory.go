@@ -5,29 +5,29 @@ import (
 	"github.com/s-rah/go-ricochet/connection"
 )
 
-// A concrete instance of a ricochet application, encapsulating a connection
+// ApplicationInstance is a  concrete instance of a ricochet application, encapsulating a connection
 type ApplicationInstance struct {
 	connection.AutoConnectionHandler
 	Connection     *connection.Connection
 	RemoteHostname string
 }
 
-// Application instance factory
+// ApplicationInstanceFactory
 type ApplicationInstanceFactory struct {
 	handlerMap map[string]func(*ApplicationInstance) func() channels.Handler
 }
 
-// Init setsup an Application Factory
+// Init sets up an Application Factory
 func (af *ApplicationInstanceFactory) Init() {
 	af.handlerMap = make(map[string]func(*ApplicationInstance) func() channels.Handler)
 }
 
-// AddHandler
+// AddHandler defines a channel type -> handler construct function
 func (af *ApplicationInstanceFactory) AddHandler(ctype string, chandler func(*ApplicationInstance) func() channels.Handler) {
 	af.handlerMap[ctype] = chandler
 }
 
-// GetApplicationInstance,
+// GetApplicationInstance buulds a new application instance using a connection as a base.
 func (af *ApplicationInstanceFactory) GetApplicationInstance(rc *connection.Connection) *ApplicationInstance {
 	rai := new(ApplicationInstance)
 	rai.Init()
@@ -38,3 +38,4 @@ func (af *ApplicationInstanceFactory) GetApplicationInstance(rc *connection.Conn
 	}
 	return rai
 }
+
