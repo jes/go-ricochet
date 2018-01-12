@@ -460,19 +460,8 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 		}
 	} else if res.GetEnableFeatures() != nil {
 		rc.traceLog("received enable features packet")
-		featuresToEnable := res.GetEnableFeatures().GetFeature()
-		supportChannels := handler.GetSupportedChannelTypes()
-		result := []string{}
-		for _, v := range featuresToEnable {
-			for _, s := range supportChannels {
-				if v == s {
-					result = append(result, v)
-				}
-			}
-		}
-		messageBuilder := new(utils.MessageBuilder)
-		raw := messageBuilder.FeaturesEnabled(result)
-		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", result))
+		raw := ProcessEnableFeatures(handler, res.GetEnableFeatures())
+		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", raw))
 		rc.SendRicochetPacket(rc.Conn, 0, raw)
 	} else if res.GetFeaturesEnabled() != nil {
 		rc.SupportChannels = res.GetFeaturesEnabled().GetFeature()
