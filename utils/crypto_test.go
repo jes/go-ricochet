@@ -2,6 +2,7 @@ package utils
 
 import (
 	"testing"
+	"math"
 )
 
 func TestGeneratePrivateKey(t *testing.T) {
@@ -16,4 +17,11 @@ func TestLoadPrivateKey(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error while loading private key from file: %v", err)
 	}
+}
+
+func TestGetRandNumber(t *testing.T) {
+        num := GetRandNumber()
+        if !num.IsUint64() || num.Uint64() > uint64(math.MaxUint32) {
+                t.Errorf("Error random number outside of expected bounds %v", num)
+        }
 }

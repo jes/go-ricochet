@@ -1,13 +1,10 @@
 package channels
 
 import (
-	"crypto/rand"
 	"github.com/golang/protobuf/proto"
 	"github.com/s-rah/go-ricochet/utils"
 	"github.com/s-rah/go-ricochet/wire/chat"
 	"github.com/s-rah/go-ricochet/wire/control"
-	"math"
-	"math/big"
 	"time"
 )
 
@@ -100,10 +97,7 @@ func (cc *ChatChannel) RequiresAuthentication() string {
 // returned, it will be sent as the ChannelResult message.
 func (cc *ChatChannel) OpenInbound(channel *Channel, raw *Protocol_Data_Control.OpenChannel) ([]byte, error) {
 	cc.channel = channel
-	id, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))
-	if err != nil {
-		return nil, err
-	}
+	id := utils.GetRandNumber()
 	cc.lastMessageID = uint32(id.Uint64())
 	cc.channel.Pending = false
 	messageBuilder := new(utils.MessageBuilder)
@@ -115,10 +109,7 @@ func (cc *ChatChannel) OpenInbound(channel *Channel, raw *Protocol_Data_Control.
 // returned, it will be sent as the OpenChannel message.
 func (cc *ChatChannel) OpenOutbound(channel *Channel) ([]byte, error) {
 	cc.channel = channel
-	id, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))
-	if err != nil {
-		return nil, err
-	}
+	id := utils.GetRandNumber()
 	cc.lastMessageID = uint32(id.Uint64())
 	messageBuilder := new(utils.MessageBuilder)
 	return messageBuilder.OpenChannel(channel.ID, cc.Type()), nil

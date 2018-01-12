@@ -7,6 +7,8 @@ import (
 	"encoding/pem"
 	"errors"
 	"io/ioutil"
+	"math"
+	"math/big"
 )
 
 const (
@@ -16,6 +18,14 @@ const (
 	// RicochetKeySize - tor onion services currently use rsa key sizes of 1024 bits
 	RicochetKeySize = 1024
 )
+
+func GetRandNumber() *big.Int {
+        num, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))
+        // If we can't generate random numbers then panicking is probably
+        // the best option.
+        CheckError(err)
+        return num
+}
 
 // GeneratePrivateKey generates a new private key for use
 func GeneratePrivateKey() (*rsa.PrivateKey, error) {
