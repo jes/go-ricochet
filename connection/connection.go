@@ -360,8 +360,7 @@ func (rc *Connection) Process(handler Handler) error {
 			} else {
 				// When a non-zero packet is received for an unknown
 				// channel, the recipient responds by closing
-				// that channel
-				// TODO: (otherwise we just ignore) Clarify Protocol Spec?
+				// that channel.
 				rc.traceLog(fmt.Sprintf("received packet on unknown channel %d. closing.", packet.Channel))
 				if len(packet.Data) != 0 {
 					rc.SendRicochetPacket(rc.Conn, packet.Channel, []byte{})
