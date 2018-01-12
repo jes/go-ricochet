@@ -38,4 +38,3 @@ func (af *ApplicationInstanceFactory) GetApplicationInstance(rc *connection.Conn
 	}
 	return rai
 }
-

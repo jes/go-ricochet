@@ -121,6 +121,6 @@ func TestChatChannelOperations(t *testing.T) {
 
 	chatChannel.SendMessage("hello")
 	ackMessage := messageBuilder.AckChatMessage(0, true)
-        chatChannel.Packet(ackMessage)
+	chatChannel.Packet(ackMessage)
 
 }

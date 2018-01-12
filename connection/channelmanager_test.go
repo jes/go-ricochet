@@ -6,14 +6,13 @@ import (
 )
 
 type OverrideChatChannel struct {
-        channels.ChatChannel
+	channels.ChatChannel
 }
 
 // Singleton - for chat channels there can only be one instance per direction
 func (cc *OverrideChatChannel) Singleton() bool {
 	return false
 }
-
 
 func TestClientManagerDuplicateMultiple(t *testing.T) {
 	ccm := NewClientChannelManager()

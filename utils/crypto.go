@@ -20,11 +20,11 @@ const (
 )
 
 func GetRandNumber() *big.Int {
-        num, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))
-        // If we can't generate random numbers then panicking is probably
-        // the best option.
-        CheckError(err)
-        return num
+	num, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))
+	// If we can't generate random numbers then panicking is probably
+	// the best option.
+	CheckError(err)
+	return num
 }
 
 // GeneratePrivateKey generates a new private key for use
