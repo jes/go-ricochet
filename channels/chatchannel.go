@@ -139,7 +139,10 @@ func (cc *ChatChannel) Packet(data []byte) {
 			} else if ack := res.GetChatAcknowledge(); ack != nil {
 				cc.Handler.ChatMessageAck(ack.GetMessageId(), ack.GetAccepted())
 			}
-			// XXX?
 		}
+		// We ignore invalid packets.
+		return
 	}
+	// Close the channel if it is being misused
+	cc.channel.CloseChannel()
 }

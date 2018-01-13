@@ -139,7 +139,12 @@ func TestContactRequestPacket(t *testing.T) {
 	contactRequestChannel.OpenOutboundResult(nil, cr)
 
 	ackp := messageBuilder.ReplyToContactRequest(1, "Accepted")
+	closed := false
+	channel.CloseChannel = func() { closed = true }
 	contactRequestChannel.Packet(ackp)
+	if closed == false {
+		t.Errorf("Channel Should Have Been Closed")
+	}
 }
 
 func TestContactRequestRejected(t *testing.T) {
@@ -160,7 +165,12 @@ func TestContactRequestRejected(t *testing.T) {
 	contactRequestChannel.OpenOutboundResult(nil, cr)
 
 	ackp := messageBuilder.ReplyToContactRequest(1, "Rejected")
+	closed := false
+	channel.CloseChannel = func() { closed = true }
 	contactRequestChannel.Packet(ackp)
+	if closed == false {
+		t.Errorf("Channel Should Have Been Closed")
+	}
 }
 
 func TestContactRequestError(t *testing.T) {
@@ -181,7 +191,12 @@ func TestContactRequestError(t *testing.T) {
 	contactRequestChannel.OpenOutboundResult(nil, cr)
 
 	ackp := messageBuilder.ReplyToContactRequest(1, "Error")
+	closed := false
+	channel.CloseChannel = func() { closed = true }
 	contactRequestChannel.Packet(ackp)
+	if closed == false {
+		t.Errorf("Channel Should Have Been Closed")
+	}
 }
 
 func BuildOpenChannel(nickname string, message string) *Protocol_Data_Control.OpenChannel {

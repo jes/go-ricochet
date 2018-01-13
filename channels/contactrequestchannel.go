@@ -155,8 +155,8 @@ func (crc *ContactRequestChannel) Packet(data []byte) {
 		err := proto.Unmarshal(data, response)
 		if err == nil {
 			crc.handleStatus(response.GetStatus().String())
-			return
 		}
 	}
-	crc.channel.SendMessage([]byte{})
+	// Whatever happens we close the channel
+	crc.channel.CloseChannel()
 }
