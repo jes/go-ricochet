@@ -390,7 +390,8 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 			// Enforce Authentication Check.
 			_, authed := rc.Authentication[chandler.RequiresAuthentication()]
 			if !authed {
-				rc.SendRicochetPacket(rc.Conn, 0, []byte{})
+				response := rc.messageBuilder.RejectOpenChannel(opm.GetChannelIdentifier(), "UnauthorizedError")
+				rc.SendRicochetPacket(rc.Conn, 0, response)
 				rc.traceLog(fmt.Sprintf("do not have required authorization to open channel type %v", chandler.Type()))
 				return
 			}
@@ -444,7 +445,7 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 			channel.Handler.OpenOutboundResult(nil, cr)
 		} else {
 			rc.traceLog(fmt.Sprintf("channel of type %v rejected on %v", channel.Type, id))
-			channel.Handler.OpenOutboundResult(errors.New(""), cr)
+			channel.Handler.OpenOutboundResult(errors.New(cr.GetCommonError().String()), cr)
 		}
 
 	} else if res.GetKeepAlive() != nil {
@@ -452,17 +453,16 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 		// We should likely put these calls behind
 		// authentication.
 		rc.traceLog("received keep alive packet")
-		if res.GetKeepAlive().GetResponseRequested() {
-			messageBuilder := new(utils.MessageBuilder)
-			raw := messageBuilder.KeepAlive(true)
+		respond, data := ProcessKeepAlive(res.GetKeepAlive())
+		if respond {
 			rc.traceLog("sending keep alive response")
-			rc.SendRicochetPacket(rc.Conn, 0, raw)
+			rc.SendRicochetPacket(rc.Conn, 0, data)
 		}
 	} else if res.GetEnableFeatures() != nil {
 		rc.traceLog("received enable features packet")
-		raw := ProcessEnableFeatures(handler, res.GetEnableFeatures())
-		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", raw))
-		rc.SendRicochetPacket(rc.Conn, 0, raw)
+		data := ProcessEnableFeatures(handler, res.GetEnableFeatures())
+		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", data))
+		rc.SendRicochetPacket(rc.Conn, 0, data)
 	} else if res.GetFeaturesEnabled() != nil {
 		rc.SupportChannels = res.GetFeaturesEnabled().GetFeature()
 		rc.traceLog(fmt.Sprintf("connection supports: %v", rc.SupportChannels))

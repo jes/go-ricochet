@@ -14,6 +14,26 @@ func (m *MockHandler) GetSupportedChannelTypes() []string {
 	return []string{"im.ricochet.chat"}
 }
 
+func TestKeepAliveNoResponse(t *testing.T) {
+	ka := &Protocol_Data_Control.KeepAlive{
+		ResponseRequested: proto.Bool(false),
+	}
+	respond, _ := ProcessKeepAlive(ka)
+	if respond == true {
+		t.Errorf("KeepAlive process should have not needed a response %v %v", ka, respond)
+	}
+}
+
+func TestKeepAliveRequestResponse(t *testing.T) {
+	ka := &Protocol_Data_Control.KeepAlive{
+		ResponseRequested: proto.Bool(true),
+	}
+	respond, _ := ProcessKeepAlive(ka)
+	if respond == false {
+		t.Errorf("KeepAlive process should have produced a response %v %v", ka, respond)
+	}
+}
+
 func TestEnableFeatures(t *testing.T) {
 	handler := new(MockHandler)
 	features := []string{"feature1", "im.ricochet.chat"}
