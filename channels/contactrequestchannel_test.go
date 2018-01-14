@@ -52,6 +52,7 @@ func TestContactRequestOpenOutbound(t *testing.T) {
 	handler := new(TestContactRequestHandler)
 	contactRequestChannel.Handler = handler
 	channel := Channel{ID: 1}
+	channel.CloseChannel = func() {}
 	response, err := contactRequestChannel.OpenOutbound(&channel)
 	if err == nil {
 		res := new(Protocol_Data_Control.Packet)
@@ -73,6 +74,7 @@ func TestContactRequestOpenOutboundResult(t *testing.T) {
 		Handler: &TestContactRequestHandler{},
 	}
 	channel := Channel{ID: 1}
+	channel.CloseChannel = func() {}
 	contactRequestChannel.OpenOutbound(&channel)
 
 	messageBuilder := new(utils.MessageBuilder)
@@ -93,6 +95,7 @@ func TestContactRequestOpenInbound(t *testing.T) {
 	handler := new(TestContactRequestHandler)
 	contactRequestChannel.Handler = handler
 	channel := Channel{ID: 1}
+	channel.CloseChannel = func() {}
 	response, err := contactRequestChannel.OpenInbound(&channel, opm)
 
 	if err == nil {
@@ -144,6 +147,46 @@ func TestContactRequestPacket(t *testing.T) {
 	contactRequestChannel.Packet(ackp)
 	if closed == false {
 		t.Errorf("Channel Should Have Been Closed")
+	}
+}
+
+func TestContactRequestPending(t *testing.T) {
+	contactRequestChannel := new(ContactRequestChannel)
+	handler := new(TestContactRequestHandler)
+	contactRequestChannel.Handler = handler
+	channel := Channel{ID: 1}
+	contactRequestChannel.OpenOutbound(&channel)
+
+	messageBuilder := new(utils.MessageBuilder)
+	ack := messageBuilder.ReplyToContactRequestOnResponse(1, "Pending")
+	// We have just constructed this so there is little
+	// point in doing error checking here in the test
+	res := new(Protocol_Data_Control.Packet)
+	proto.Unmarshal(ack[:], res)
+	cr := res.GetChannelResult()
+
+	contactRequestChannel.OpenOutboundResult(nil, cr)
+
+	ackp := messageBuilder.ReplyToContactRequest(1, "Pending")
+	closed := false
+	channel.CloseChannel = func() { closed = true }
+	contactRequestChannel.Packet(ackp)
+	if closed {
+		t.Errorf("Channel Should Not Have Been Closed")
+	}
+
+}
+
+func TestContactRequestSend(t *testing.T) {
+	contactRequestChannel := new(ContactRequestChannel)
+	channel := Channel{ID: 1}
+	channel.SendMessage = func(message []byte) {}
+	closed := false
+	channel.CloseChannel = func() { closed = true }
+	contactRequestChannel.OpenOutbound(&channel)
+	contactRequestChannel.SendResponse("Accepted")
+	if closed != true {
+		t.Errorf("Channel Should Not Have Been Closed")
 	}
 }
 

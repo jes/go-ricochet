@@ -131,20 +131,22 @@ func (crc *ContactRequestChannel) OpenOutboundResult(err error, crm *Protocol_Da
 func (crc *ContactRequestChannel) SendResponse(status string) {
 	messageBuilder := new(utils.MessageBuilder)
 	crc.channel.SendMessage(messageBuilder.ReplyToContactRequest(crc.channel.ID, status))
+	crc.channel.CloseChannel()
 }
 
 func (crc *ContactRequestChannel) handleStatus(status string) {
 	switch status {
 	case "Accepted":
 		crc.Handler.ContactRequestAccepted()
+		crc.channel.CloseChannel()
 	case "Pending":
 		break
 	case "Rejected":
 		crc.Handler.ContactRequestRejected()
-		break
+		crc.channel.CloseChannel()
 	case "Error":
 		crc.Handler.ContactRequestError()
-		break
+		crc.channel.CloseChannel()
 	}
 }
 
@@ -157,6 +159,4 @@ func (crc *ContactRequestChannel) Packet(data []byte) {
 			crc.handleStatus(response.GetStatus().String())
 		}
 	}
-	// Whatever happens we close the channel
-	crc.channel.CloseChannel()
 }
