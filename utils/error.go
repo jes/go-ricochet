@@ -19,6 +19,7 @@ const (
 
 	UnknownChannelTypeError      = Error("UnknownChannelTypeError")
 	UnauthorizedChannelTypeError = Error("UnauthorizedChannelTypeError")
+	UnexpectedChannelResultError = Error("UnexpectedChannelResultError")
 
 	// Timeout Errors
 	ActionTimedOutError = Error("ActionTimedOutError")

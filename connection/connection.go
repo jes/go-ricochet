@@ -2,7 +2,6 @@ package connection
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"github.com/s-rah/go-ricochet/channels"
@@ -19,6 +18,7 @@ type Connection struct {
 	utils.RicochetNetwork
 
 	channelManager *ChannelManager
+	ctrlChannel    ControlChannel
 
 	// Ricochet Network Loop
 	packetChannel chan utils.RicochetData
@@ -70,6 +70,7 @@ func NewInboundConnection(conn io.ReadWriteCloser) *Connection {
 	rc.IsInbound = true
 	rc.init()
 	rc.channelManager = NewServerChannelManager()
+	rc.ctrlChannel.Init(rc.channelManager)
 	return rc
 }
 
@@ -82,6 +83,7 @@ func NewOutboundConnection(conn io.ReadWriteCloser, remoteHostname string) *Conn
 	rc.init()
 	rc.RemoteHostname = remoteHostname
 	rc.channelManager = NewClientChannelManager()
+	rc.ctrlChannel.Init(rc.channelManager)
 	return rc
 }
 
@@ -430,37 +432,20 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 
 		}
 	} else if res.GetChannelResult() != nil {
-		cr := res.GetChannelResult()
-		id := cr.GetChannelIdentifier()
-
-		channel, found := rc.channelManager.GetChannel(id)
-
-		if !found {
-			rc.traceLog(fmt.Sprintf("channel result received for unknown channel: type:%s id:%v", channel.Type, id))
-			return
-		}
-
-		if cr.GetOpened() {
-			rc.traceLog(fmt.Sprintf("channel of type %v opened on %v", channel.Type, id))
-			channel.Handler.OpenOutboundResult(nil, cr)
-		} else {
-			rc.traceLog(fmt.Sprintf("channel of type %v rejected on %v", channel.Type, id))
-			channel.Handler.OpenOutboundResult(errors.New(cr.GetCommonError().String()), cr)
-		}
-
+		rc.ctrlChannel.ProcessChannelResult(res.GetChannelResult())
 	} else if res.GetKeepAlive() != nil {
 		// XXX Though not currently part of the protocol
 		// We should likely put these calls behind
 		// authentication.
 		rc.traceLog("received keep alive packet")
-		respond, data := ProcessKeepAlive(res.GetKeepAlive())
+		respond, data := rc.ctrlChannel.ProcessKeepAlive(res.GetKeepAlive())
 		if respond {
 			rc.traceLog("sending keep alive response")
 			rc.SendRicochetPacket(rc.Conn, 0, data)
 		}
 	} else if res.GetEnableFeatures() != nil {
 		rc.traceLog("received enable features packet")
-		data := ProcessEnableFeatures(handler, res.GetEnableFeatures())
+		data := rc.ctrlChannel.ProcessEnableFeatures(handler, res.GetEnableFeatures())
 		rc.traceLog(fmt.Sprintf("sending featured enabled: %v", data))
 		rc.SendRicochetPacket(rc.Conn, 0, data)
 	} else if res.GetFeaturesEnabled() != nil {
