@@ -223,7 +223,6 @@ func (rc *Connection) handleChannelOpening(channel *channels.Channel, response [
 }
 
 func (rc *Connection) buildChannel(handler channels.Handler, openChannelFunc func(handler channels.Handler) (*channels.Channel, error)) (*channels.Channel, error) {
-
 	err := rc.am.Authorized(handler.RequiresAuthentication())
 	if err == nil {
 		channel, err := openChannelFunc(handler)
@@ -240,6 +239,7 @@ func (rc *Connection) buildChannel(handler channels.Handler, openChannelFunc fun
 			}
 			return channel, nil
 		}
+		return nil, err
 	}
 	return nil, err
 }
