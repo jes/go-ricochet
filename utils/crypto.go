@@ -19,6 +19,8 @@ const (
 	RicochetKeySize = 1024
 )
 
+// GetRandNumber is a helper function which returns a random integer, this is 
+// currently mostly used to generate messageids
 func GetRandNumber() *big.Int {
 	num, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))
 	// If we can't generate random numbers then panicking is probably

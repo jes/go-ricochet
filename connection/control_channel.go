@@ -6,14 +6,18 @@ import (
 	"github.com/s-rah/go-ricochet/wire/control"
 )
 
+
+// ControlChannel encapsulates logic for the control channel processing
 type ControlChannel struct {
 	channelManager *ChannelManager
 }
 
+// Init sets up a control channel
 func (ctrl *ControlChannel) Init(channelManager *ChannelManager) {
 	ctrl.channelManager = channelManager
 }
 
+// ProcessChannelResult contains the logic for processing a channelresult message
 func (ctrl *ControlChannel) ProcessChannelResult(cr *Protocol_Data_Control.ChannelResult) (bool, error) {
 	id := cr.GetChannelIdentifier()
 
@@ -33,7 +37,7 @@ func (ctrl *ControlChannel) ProcessChannelResult(cr *Protocol_Data_Control.Chann
 	return false, nil
 }
 
-//  ProcessKeepAlive
+// ProcessKeepAlive contains logic for responding to keep alives
 func (ctrl *ControlChannel) ProcessKeepAlive(ka *Protocol_Data_Control.KeepAlive) (bool, []byte) {
 	if ka.GetResponseRequested() {
 		messageBuilder := new(utils.MessageBuilder)

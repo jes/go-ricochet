@@ -4,6 +4,7 @@ import (
 	"github.com/s-rah/go-ricochet/utils"
 )
 
+// AuthorizationManager helps keep track of permissions for a connection
 type AuthorizationManager struct {
 	Authorizations map[string]bool
 }
