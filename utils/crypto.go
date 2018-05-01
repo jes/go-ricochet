@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"math"
 	"math/big"
+	"github.com/yawning/bulb/utils/pkcs1"
 )
 
 const (
@@ -68,4 +69,15 @@ func PrivateKeyToString(privateKey *rsa.PrivateKey) string {
 	}
 
 	return string(pem.EncodeToMemory(&privateKeyBlock))
+}
+
+// return an onion address from a private key
+func GetOnionAddress(privateKey *rsa.PrivateKey) (string, error) {
+	addr, err := pkcs1.OnionAddr(&privateKey.PublicKey)
+	if err != nil {
+		return "", err
+	} else if addr == "" {
+		return "", OnionAddressGenerationError
+	}
+	return addr, nil
 }
