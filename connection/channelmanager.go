@@ -70,9 +70,11 @@ func (cm *ChannelManager) OpenChannelRequestFromPeer(channelID int32, chandler c
 	cm.lock.Lock()
 	_, exists := cm.channels[channelID]
 	if exists {
+		cm.lock.Unlock()
 		return nil, utils.ChannelIDIsAlreadyInUseError
 	}
 	cm.lock.Unlock()
+
 
 	// Some channels only allow us to open one of them per connection
 	if chandler.Singleton() && cm.Channel(chandler.Type(), channels.Inbound) != nil {
