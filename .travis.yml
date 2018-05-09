@@ -12,6 +12,7 @@ install:
     - go get github.com/mattn/goveralls
     - go get golang.org/x/net/proxy
     - go get github.com/golang/protobuf/proto
+    - go get github.com/yawning/bulb/
 
 script:
 

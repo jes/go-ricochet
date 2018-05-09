@@ -12,7 +12,7 @@ type ChannelManager struct {
 	channels        map[int32]*channels.Channel
 	nextFreeChannel int32
 	isClient        bool
-	lock 			sync.Mutex // ChannelManager may be accessed by multiple thread, so we need to protect the map.
+	lock            sync.Mutex // ChannelManager may be accessed by multiple thread, so we need to protect the map.
 }
 
 // NewClientChannelManager construsts a new channel manager enforcing behaviour

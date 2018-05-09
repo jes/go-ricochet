@@ -6,7 +6,6 @@ import (
 	"github.com/s-rah/go-ricochet/wire/control"
 )
 
-
 // ControlChannel encapsulates logic for the control channel processing
 type ControlChannel struct {
 	channelManager *ChannelManager

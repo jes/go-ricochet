@@ -6,10 +6,10 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"errors"
+	"github.com/yawning/bulb/utils/pkcs1"
 	"io/ioutil"
 	"math"
 	"math/big"
-	"github.com/yawning/bulb/utils/pkcs1"
 )
 
 const (
@@ -20,7 +20,7 @@ const (
 	RicochetKeySize = 1024
 )
 
-// GetRandNumber is a helper function which returns a random integer, this is 
+// GetRandNumber is a helper function which returns a random integer, this is
 // currently mostly used to generate messageids
 func GetRandNumber() *big.Int {
 	num, err := rand.Int(rand.Reader, big.NewInt(math.MaxUint32))

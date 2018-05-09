@@ -40,7 +40,7 @@ const (
 
 	// Library Use Errors
 	OnionAddressGenerationError = Error("OnionAddressGenerationError")
-	PrivateKeyNotSetError = Error("PrivateKeyNotSet")
+	PrivateKeyNotSetError       = Error("PrivateKeyNotSet")
 
 	// Connection Errors
 	ConnectionClosedError = Error("ConnectionClosedError")
