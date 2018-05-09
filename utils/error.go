@@ -39,8 +39,8 @@ const (
 	AttemptToOpenMoreThanOneSingletonChannelError = Error("AttemptToOpenMoreThanOneSingletonChannelError")
 
 	// Library Use Errors
-	PrivateKeyNotSetError = Error("ClientFailedToAuthenticateError")
 	OnionAddressGenerationError = Error("OnionAddressGenerationError")
+	PrivateKeyNotSetError = Error("PrivateKeyNotSet")
 
 	// Connection Errors
 	ConnectionClosedError = Error("ConnectionClosedError")

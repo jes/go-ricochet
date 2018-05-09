@@ -52,6 +52,12 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 	rc.Process(rai)
 }
 
+func (ra *RicochetApplication) HandleApplicationInstance(rai *ApplicationInstance) {
+	ra.lock.Lock()
+	ra.instances = append(ra.instances, rai)
+	ra.lock.Unlock()
+}
+
 func (ra *RicochetApplication) Broadcast(do func(rai *ApplicationInstance)) {
 	ra.lock.Lock()
 	for _, rai := range ra.instances {

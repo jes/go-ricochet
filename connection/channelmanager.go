@@ -3,6 +3,7 @@ package connection
 import (
 	"github.com/s-rah/go-ricochet/channels"
 	"github.com/s-rah/go-ricochet/utils"
+	"sync"
 )
 
 // ChannelManager encapsulates the logic for server and client side assignment
@@ -11,6 +12,7 @@ type ChannelManager struct {
 	channels        map[int32]*channels.Channel
 	nextFreeChannel int32
 	isClient        bool
+	lock 			sync.Mutex // ChannelManager may be accessed by multiple thread, so we need to protect the map.
 }
 
 // NewClientChannelManager construsts a new channel manager enforcing behaviour
@@ -48,7 +50,9 @@ func (cm *ChannelManager) OpenChannelRequest(chandler channels.Handler) (*channe
 	channel.Handler = chandler
 	channel.Pending = true
 	channel.Direction = channels.Outbound
+	cm.lock.Lock()
 	cm.channels[channel.ID] = channel
+	cm.lock.Unlock()
 	return channel, nil
 }
 
@@ -63,10 +67,12 @@ func (cm *ChannelManager) OpenChannelRequestFromPeer(channelID int32, chandler c
 		return nil, utils.ClientAttemptedToOpenOddNumberedChannelError
 	}
 
+	cm.lock.Lock()
 	_, exists := cm.channels[channelID]
 	if exists {
 		return nil, utils.ChannelIDIsAlreadyInUseError
 	}
+	cm.lock.Unlock()
 
 	// Some channels only allow us to open one of them per connection
 	if chandler.Singleton() && cm.Channel(chandler.Type(), channels.Inbound) != nil {
@@ -80,7 +86,9 @@ func (cm *ChannelManager) OpenChannelRequestFromPeer(channelID int32, chandler c
 
 	channel.Pending = true
 	channel.Direction = channels.Inbound
+	cm.lock.Lock()
 	cm.channels[channelID] = channel
+	cm.lock.Unlock()
 	return channel, nil
 }
 
@@ -88,6 +96,7 @@ func (cm *ChannelManager) OpenChannelRequestFromPeer(channelID int32, chandler c
 // or Outbound), and returns the associated state. Returns nil if no matching channel
 // exists or if multiple matching channels exist.
 func (cm *ChannelManager) Channel(ctype string, way channels.Direction) *channels.Channel {
+	cm.lock.Lock()
 	var foundChannel *channels.Channel
 	for _, channel := range cm.channels {
 		if channel.Handler.Type() == ctype && channel.Direction == way {
@@ -99,16 +108,21 @@ func (cm *ChannelManager) Channel(ctype string, way channels.Direction) *channel
 			}
 		}
 	}
+	cm.lock.Unlock()
 	return foundChannel
 }
 
 // GetChannel finds and returns a given channel if it is found
 func (cm *ChannelManager) GetChannel(channelID int32) (*channels.Channel, bool) {
+	cm.lock.Lock()
 	channel, found := cm.channels[channelID]
+	cm.lock.Unlock()
 	return channel, found
 }
 
 // RemoveChannel removes a given channel id.
 func (cm *ChannelManager) RemoveChannel(channelID int32) {
+	cm.lock.Lock()
 	delete(cm.channels, channelID)
+	cm.lock.Unlock()
 }
