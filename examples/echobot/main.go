@@ -33,6 +33,9 @@ func (echobot *RicochetEchoBot) ChatMessage(messageID uint32, when time.Time, me
 	return true
 }
 
+func (echobot *RicochetEchoBot) OpenInbound() {
+}
+
 func (echobot *RicochetEchoBot) ChatMessageAck(messageID uint32, accepted bool) {
 
 }
@@ -48,6 +51,7 @@ func (echobot *RicochetEchoBot) Connect(privateKeyFile string, hostname string) 
 		contact.Handler = echobot
 		return contact
 	})
+
 	echobot.RegisterChannelHandler("im.ricochet.chat", func() channels.Handler {
 		chat := new(channels.ChatChannel)
 		chat.Handler = echobot

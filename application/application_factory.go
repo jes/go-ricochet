@@ -27,7 +27,7 @@ func (af *ApplicationInstanceFactory) AddHandler(ctype string, chandler func(*Ap
 	af.handlerMap[ctype] = chandler
 }
 
-// GetApplicationInstance buulds a new application instance using a connection as a base.
+// GetApplicationInstance builds a new application instance using a connection as a base.
 func (af *ApplicationInstanceFactory) GetApplicationInstance(rc *connection.Connection) *ApplicationInstance {
 	rai := new(ApplicationInstance)
 	rai.Init()

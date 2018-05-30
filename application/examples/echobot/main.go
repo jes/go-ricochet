@@ -18,6 +18,21 @@ func (ebi *EchoBotInstance) Init(rai *application.ApplicationInstance, ra *appli
 	ebi.ra = ra
 }
 
+// We always want bidirectional chat channels
+func (ebi *EchoBotInstance) OpenInbound() {
+	log.Println("OpenInbound() ChatChannel handler called...")
+	outboutChatChannel := ebi.rai.Connection.Channel("im.ricochet.chat", channels.Outbound)
+	if outboutChatChannel == nil {
+		ebi.rai.Connection.Do(func() error {
+			ebi.rai.Connection.RequestOpenChannel("im.ricochet.chat",
+				&channels.ChatChannel{
+					Handler: ebi,
+				})
+			return nil
+		})
+	}
+}
+
 func (ebi *EchoBotInstance) ChatMessage(messageID uint32, when time.Time, message string) bool {
 	log.Printf("message from %v - %v", ebi.rai.RemoteHostname, message)
 	go ebi.ra.Broadcast(func(rai *application.ApplicationInstance) {
@@ -32,12 +47,6 @@ func (ebi *EchoBotInstance) ChatMessageAck(messageID uint32, accepted bool) {
 
 func (ebi *EchoBotInstance) SendChatMessage(rai *application.ApplicationInstance, message string) {
 	rai.Connection.Do(func() error {
-		// Technically this errors after the second time but we can ignore it.
-		rai.Connection.RequestOpenChannel("im.ricochet.chat",
-			&channels.ChatChannel{
-				Handler: ebi,
-			})
-
 		channel := rai.Connection.Channel("im.ricochet.chat", channels.Outbound)
 		if channel != nil {
 			chatchannel, ok := channel.Handler.(*channels.ChatChannel)

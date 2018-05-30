@@ -28,6 +28,8 @@ type ChatChannel struct {
 // ConnectionHandler; there is no need to use a distinct type as a
 // ChatChannelHandler.
 type ChatChannelHandler interface {
+	// OpenInbound is called when a inbound chat channel is opened
+	OpenInbound()
 	// ChatMessage is called when a chat message is received. Return true to acknowledge
 	// the message successfully, and false to NACK and refuse the message.
 	ChatMessage(messageID uint32, when time.Time, message string) bool
@@ -101,6 +103,7 @@ func (cc *ChatChannel) OpenInbound(channel *Channel, raw *Protocol_Data_Control.
 	cc.lastMessageID = uint32(id.Uint64())
 	cc.channel.Pending = false
 	messageBuilder := new(utils.MessageBuilder)
+	go cc.Handler.OpenInbound()
 	return messageBuilder.AckOpenChannel(channel.ID), nil
 }
 

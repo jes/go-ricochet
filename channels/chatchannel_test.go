@@ -30,28 +30,6 @@ func TestChatChannelOptions(t *testing.T) {
 	}
 }
 
-func TestChatChannelOpenInbound(t *testing.T) {
-	messageBuilder := new(utils.MessageBuilder)
-	ocm := messageBuilder.OpenChannel(2, "im.ricochet.chat")
-
-	// We have just constructed this so there is little
-	// point in doing error checking here in the test
-	res := new(Protocol_Data_Control.Packet)
-	proto.Unmarshal(ocm[:], res)
-	opm := res.GetOpenChannel()
-
-	chatChannel := new(ChatChannel)
-	channel := Channel{ID: 1}
-	response, err := chatChannel.OpenInbound(&channel, opm)
-
-	if err == nil {
-		res := new(Protocol_Data_Control.Packet)
-		proto.Unmarshal(response[:], res)
-	} else {
-		t.Errorf("Error while parsing chatchannel openinbound output: %v", err)
-	}
-}
-
 func TestChatChannelOpenOutbound(t *testing.T) {
 	chatChannel := new(ChatChannel)
 	channel := Channel{ID: 1}
@@ -72,12 +50,39 @@ func TestChatChannelOpenOutbound(t *testing.T) {
 type TestChatChannelHandler struct {
 }
 
+func (tcch *TestChatChannelHandler) OpenInbound() {
+
+}
+
 func (tcch *TestChatChannelHandler) ChatMessage(messageID uint32, when time.Time, message string) bool {
 	return true
 }
 
 func (tcch *TestChatChannelHandler) ChatMessageAck(messageID uint32, accepted bool) {
 
+}
+
+func TestChatChannelOpenInbound(t *testing.T) {
+	messageBuilder := new(utils.MessageBuilder)
+	ocm := messageBuilder.OpenChannel(2, "im.ricochet.chat")
+
+	// We have just constructed this so there is little
+	// point in doing error checking here in the test
+	res := new(Protocol_Data_Control.Packet)
+	proto.Unmarshal(ocm[:], res)
+	opm := res.GetOpenChannel()
+
+	chatChannel := new(ChatChannel)
+	chatChannel.Handler = new(TestChatChannelHandler)
+	channel := Channel{ID: 1}
+	response, err := chatChannel.OpenInbound(&channel, opm)
+
+	if err == nil {
+		res := new(Protocol_Data_Control.Packet)
+		proto.Unmarshal(response[:], res)
+	} else {
+		t.Errorf("Error while parsing chatchannel openinbound output: %v", err)
+	}
 }
 
 func TestChatChannelOperations(t *testing.T) {
