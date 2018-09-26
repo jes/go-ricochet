@@ -33,7 +33,7 @@ type ContactRequestChannel struct {
 // ConnectionHandler; there is no need to use a distinct type as a
 // ContactRequestChannelHandler.
 type ContactRequestChannelHandler interface {
-	ContactRequest(name string, message string) string
+	ContactRequest(hostname string, name string, message string) string
 	ContactRequestRejected()
 	ContactRequestAccepted()
 	ContactRequestError()
@@ -91,7 +91,11 @@ func (crc *ContactRequestChannel) OpenInbound(channel *Channel, oc *Protocol_Dat
 
 			crc.Name = contactRequest.GetNickname()
 			crc.Message = contactRequest.GetMessageText()
-			result := crc.Handler.ContactRequest(contactRequest.GetNickname(), contactRequest.GetMessageText())
+			remoteHostname := channel.ServerHostname
+			if channel.Direction == Inbound {
+				remoteHostname = channel.ClientHostname
+			}
+			result := crc.Handler.ContactRequest(remoteHostname, contactRequest.GetNickname(), contactRequest.GetMessageText())
 			messageBuilder := new(utils.MessageBuilder)
 			return messageBuilder.ReplyToContactRequestOnResponse(channel.ID, result), nil
 		}

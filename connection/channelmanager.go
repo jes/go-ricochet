@@ -75,7 +75,6 @@ func (cm *ChannelManager) OpenChannelRequestFromPeer(channelID int32, chandler c
 	}
 	cm.lock.Unlock()
 
-
 	// Some channels only allow us to open one of them per connection
 	if chandler.Singleton() && cm.Channel(chandler.Type(), channels.Inbound) != nil {
 		return nil, utils.AttemptToOpenMoreThanOneSingletonChannelError

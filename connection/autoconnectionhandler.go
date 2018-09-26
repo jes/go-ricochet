@@ -15,8 +15,9 @@ import (
 // AutoConnectionHandler's behavior (such as adding new channel types, or reacting
 // to connection close events), this type can be embedded in the type that it serves.
 type AutoConnectionHandler struct {
-	handlerMap map[string]func() channels.Handler
-	connection *Connection
+	handlerMap      map[string]func() channels.Handler
+	connection      *Connection
+	OnClosedHandler func(error)
 }
 
 // Init ...
@@ -32,6 +33,9 @@ func (ach *AutoConnectionHandler) OnReady(oc *Connection) {
 
 // OnClosed is called when the OpenConnection has closed for any reason.
 func (ach *AutoConnectionHandler) OnClosed(err error) {
+	if ach.OnClosedHandler != nil {
+		ach.OnClosedHandler(err)
+	}
 }
 
 // GetSupportedChannelTypes returns a list of channel types that are registered with the handler.

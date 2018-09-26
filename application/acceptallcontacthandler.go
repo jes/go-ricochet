@@ -1,8 +1,10 @@
 package application
 
-type AcceptAllContactHandler struct{}
+type AcceptAllContactHandler struct {
+	Rai *ApplicationInstance
+}
 
-func (aach *AcceptAllContactHandler) ContactRequest(name string, message string) string {
+func (aach *AcceptAllContactHandler) ContactRequest(hostname string, name string, message string) string {
 	return "Pending"
 }
 func (aach *AcceptAllContactHandler) ContactRequestRejected() {

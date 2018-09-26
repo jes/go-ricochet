@@ -21,6 +21,7 @@ type RicochetApplication struct {
 	instances      []*ApplicationInstance
 	lock           sync.Mutex
 	aif            ApplicationInstanceFactory
+	OnNewPeer      func(*ApplicationInstance, string)
 }
 
 func (ra *RicochetApplication) Init(name string, pk *rsa.PrivateKey, af ApplicationInstanceFactory, cm ContactManagerInterface) {
@@ -41,14 +42,21 @@ func (ra *RicochetApplication) handleConnection(conn net.Conn) {
 
 	ich := connection.HandleInboundConnection(rc)
 
-	err = ich.ProcessAuthAsServer(identity.Initialize(ra.name, ra.privateKey), ra.contactManager.LookupContact)
+	rai := ra.aif.GetApplicationInstance(rc)
+	lookupContactFn := func(hostname string, publicKey rsa.PublicKey) (bool, bool) {
+		rai.RemoteHostname = hostname // XXX: without this here, I think RemoteHostname only gets set for outgoing connections
+		if ra.OnNewPeer != nil {
+			ra.OnNewPeer(rai, hostname)
+		}
+		return ra.contactManager.LookupContact(hostname, publicKey)
+	}
+	err = ich.ProcessAuthAsServer(identity.Initialize(ra.name, ra.privateKey), lookupContactFn)
 	if err != nil {
 		log.Printf("There was an error")
 		conn.Close()
 		return
 	}
 	rc.TraceLog(true)
-	rai := ra.aif.GetApplicationInstance(rc)
 	ra.lock.Lock()
 	ra.instances = append(ra.instances, rai)
 	ra.lock.Unlock()

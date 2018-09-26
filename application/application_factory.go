@@ -15,6 +15,7 @@ type ApplicationInstance struct {
 // ApplicationInstanceFactory
 type ApplicationInstanceFactory struct {
 	handlerMap map[string]func(*ApplicationInstance) func() channels.Handler
+	OnClosed   func(*ApplicationInstance, error)
 }
 
 // Init sets up an Application Factory
@@ -33,6 +34,11 @@ func (af *ApplicationInstanceFactory) GetApplicationInstance(rc *connection.Conn
 	rai.Init()
 	rai.RemoteHostname = rc.RemoteHostname
 	rai.Connection = rc
+	rai.OnClosedHandler = func(err error) {
+		if af.OnClosed != nil {
+			af.OnClosed(rai, err)
+		}
+	}
 	for t, h := range af.handlerMap {
 		rai.RegisterChannelHandler(t, h(rai))
 	}
