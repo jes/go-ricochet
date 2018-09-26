@@ -2,8 +2,8 @@ package connection
 
 import (
 	"errors"
-	"github.com/s-rah/go-ricochet/utils"
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/utils"
+	"github.com/jes/go-ricochet/wire/control"
 )
 
 // ControlChannel encapsulates logic for the control channel processing

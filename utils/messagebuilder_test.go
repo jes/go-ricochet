@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/wire/control"
 	"testing"
 )
 

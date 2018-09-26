@@ -1,11 +1,11 @@
 package main
 
 import (
-	"github.com/s-rah/go-ricochet"
-	"github.com/s-rah/go-ricochet/channels"
-	"github.com/s-rah/go-ricochet/connection"
-	"github.com/s-rah/go-ricochet/identity"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet"
+	"github.com/jes/go-ricochet/channels"
+	"github.com/jes/go-ricochet/connection"
+	"github.com/jes/go-ricochet/identity"
+	"github.com/jes/go-ricochet/utils"
 	"log"
 	"time"
 )

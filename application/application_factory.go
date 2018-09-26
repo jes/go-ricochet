@@ -1,8 +1,8 @@
 package application
 
 import (
-	"github.com/s-rah/go-ricochet/channels"
-	"github.com/s-rah/go-ricochet/connection"
+	"github.com/jes/go-ricochet/channels"
+	"github.com/jes/go-ricochet/connection"
 )
 
 // ApplicationInstance is a  concrete instance of a ricochet application, encapsulating a connection

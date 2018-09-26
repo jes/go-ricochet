@@ -2,10 +2,10 @@ package utils
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/s-rah/go-ricochet/wire/auth"
-	"github.com/s-rah/go-ricochet/wire/chat"
-	"github.com/s-rah/go-ricochet/wire/contact"
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/wire/auth"
+	"github.com/jes/go-ricochet/wire/chat"
+	"github.com/jes/go-ricochet/wire/contact"
+	"github.com/jes/go-ricochet/wire/control"
 )
 
 // MessageBuilder allows a client to construct specific data packets for the

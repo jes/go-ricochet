@@ -4,9 +4,9 @@ import (
 	"bytes"
 	"crypto/rsa"
 	"github.com/golang/protobuf/proto"
-	"github.com/s-rah/go-ricochet/identity"
-	"github.com/s-rah/go-ricochet/utils"
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/identity"
+	"github.com/jes/go-ricochet/utils"
+	"github.com/jes/go-ricochet/wire/control"
 	"testing"
 )
 

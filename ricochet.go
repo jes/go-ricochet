@@ -1,8 +1,8 @@
 package goricochet
 
 import (
-	"github.com/s-rah/go-ricochet/connection"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/connection"
+	"github.com/jes/go-ricochet/utils"
 	"io"
 	"net"
 )

@@ -2,9 +2,9 @@ package testing
 
 import (
 	"fmt"
-	"github.com/s-rah/go-ricochet/application"
-	"github.com/s-rah/go-ricochet/channels"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/application"
+	"github.com/jes/go-ricochet/channels"
+	"github.com/jes/go-ricochet/utils"
 	"log"
 	"runtime"
 	"strconv"

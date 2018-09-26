@@ -4,7 +4,7 @@ import (
 	"crypto"
 	"crypto/rsa"
 	"encoding/asn1"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/utils"
 )
 
 // Identity is an encapsulation of Name, PrivateKey and other features

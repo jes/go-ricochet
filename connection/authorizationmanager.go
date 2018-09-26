@@ -1,7 +1,7 @@
 package connection
 
 import (
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/utils"
 )
 
 // AuthorizationManager helps keep track of permissions for a connection

@@ -1,7 +1,7 @@
 package policies
 
 import (
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/utils"
 	"time"
 )
 

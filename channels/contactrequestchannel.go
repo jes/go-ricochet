@@ -2,9 +2,9 @@ package channels
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/s-rah/go-ricochet/utils"
-	"github.com/s-rah/go-ricochet/wire/contact"
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/utils"
+	"github.com/jes/go-ricochet/wire/contact"
+	"github.com/jes/go-ricochet/wire/control"
 )
 
 // Defining Versions

@@ -2,9 +2,9 @@ package connection
 
 import (
 	"github.com/golang/protobuf/proto"
-	"github.com/s-rah/go-ricochet/channels"
-	"github.com/s-rah/go-ricochet/utils"
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/channels"
+	"github.com/jes/go-ricochet/utils"
+	"github.com/jes/go-ricochet/wire/control"
 	"testing"
 )
 

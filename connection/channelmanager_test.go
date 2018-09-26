@@ -1,7 +1,7 @@
 package connection
 
 import (
-	"github.com/s-rah/go-ricochet/channels"
+	"github.com/jes/go-ricochet/channels"
 	"testing"
 )
 

@@ -1,7 +1,7 @@
 package channels
 
 import (
-	"github.com/s-rah/go-ricochet/wire/control"
+	"github.com/jes/go-ricochet/wire/control"
 )
 
 // Handler reacts to low-level events on a protocol channel. There

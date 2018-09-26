@@ -2,10 +2,10 @@ package connection
 
 import (
 	"crypto/rsa"
-	"github.com/s-rah/go-ricochet/channels"
-	"github.com/s-rah/go-ricochet/identity"
-	"github.com/s-rah/go-ricochet/policies"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/channels"
+	"github.com/jes/go-ricochet/identity"
+	"github.com/jes/go-ricochet/policies"
+	"github.com/jes/go-ricochet/utils"
 	"sync"
 )
 

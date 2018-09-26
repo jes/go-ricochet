@@ -2,8 +2,8 @@ package connection
 
 import (
 	"crypto/rsa"
-	"github.com/s-rah/go-ricochet/identity"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/identity"
+	"github.com/jes/go-ricochet/utils"
 	"net"
 	"testing"
 	"time"

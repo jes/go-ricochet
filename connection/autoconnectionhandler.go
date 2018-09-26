@@ -1,8 +1,8 @@
 package connection
 
 import (
-	"github.com/s-rah/go-ricochet/channels"
-	"github.com/s-rah/go-ricochet/utils"
+	"github.com/jes/go-ricochet/channels"
+	"github.com/jes/go-ricochet/utils"
 )
 
 // AutoConnectionHandler implements the ConnectionHandler interface on behalf of
