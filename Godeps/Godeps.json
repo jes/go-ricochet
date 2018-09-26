@@ -1,5 +1,5 @@
 {
-	"ImportPath": "github.com/s-rah/go-ricochet",
+	"ImportPath": "github.com/jes/go-ricochet",
 	"GoVersion": "go1.7",
 	"GodepVersion": "v79",
 	"Packages": [
