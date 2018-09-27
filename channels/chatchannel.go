@@ -30,6 +30,8 @@ type ChatChannel struct {
 type ChatChannelHandler interface {
 	// OpenInbound is called when a inbound chat channel is opened
 	OpenInbound()
+	// OpenedOutbound is called when an onbound chat channel is ready to use
+	OpenedOutbound()
 	// ChatMessage is called when a chat message is received. Return true to acknowledge
 	// the message successfully, and false to NACK and refuse the message.
 	ChatMessage(messageID uint32, when time.Time, message string) bool
@@ -126,6 +128,7 @@ func (cc *ChatChannel) OpenOutboundResult(err error, crm *Protocol_Data_Control.
 	if err == nil {
 		if crm.GetOpened() {
 			cc.channel.Pending = false
+			go cc.Handler.OpenedOutbound()
 		}
 	}
 }
