@@ -72,11 +72,11 @@ func (ra *RicochetApplication) HandleApplicationInstance(rai *ApplicationInstanc
 // Open a connection to another Ricochet peer at onionAddress. If they are unknown to use, use requestMessage (otherwise can be blank)
 func (ra *RicochetApplication) Open(onionAddress string, requestMessage string) (*ApplicationInstance, error) {
 	rc, err := goricochet.Open(onionAddress)
-	rc.TraceLog(true)
 	if err != nil {
 		log.Printf("Error in application.Open(): %v\n", err)
 		return nil, err
 	}
+	rc.TraceLog(true)
 
 	known, err := connection.HandleOutboundConnection(rc).ProcessAuthAsClient(identity.Initialize(ra.name, ra.privateKey))
 	rai := ra.aif.GetApplicationInstance(rc)
