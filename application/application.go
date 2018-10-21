@@ -22,6 +22,7 @@ type RicochetApplication struct {
 	lock               sync.Mutex
 	aif                ApplicationInstanceFactory
 	OnNewPeer          func(*ApplicationInstance, string)
+	OnAuthenticated    func(*ApplicationInstance, bool)
 	MakeContactHandler func(*ApplicationInstance) channels.ContactRequestChannelHandler
 }
 
@@ -84,6 +85,9 @@ func (ra *RicochetApplication) Open(onionAddress string, requestMessage string) 
 
 	known, err := connection.HandleOutboundConnection(rc).ProcessAuthAsClient(identity.Initialize(ra.name, ra.privateKey))
 	rai := ra.aif.GetApplicationInstance(rc)
+	if ra.OnAuthenticated != nil {
+		ra.OnAuthenticated(rai, known)
+	}
 	go rc.Process(rai)
 
 	if !known {
