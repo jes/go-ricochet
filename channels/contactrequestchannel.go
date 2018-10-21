@@ -156,11 +156,9 @@ func (crc *ContactRequestChannel) handleStatus(status string) {
 
 // Packet is called for each raw packet received on this channel.
 func (crc *ContactRequestChannel) Packet(data []byte) {
-	if !crc.channel.Pending {
-		response := new(Protocol_Data_ContactRequest.Response)
-		err := proto.Unmarshal(data, response)
-		if err == nil {
-			crc.handleStatus(response.GetStatus().String())
-		}
+	response := new(Protocol_Data_ContactRequest.Response)
+	err := proto.Unmarshal(data, response)
+	if err == nil {
+		crc.handleStatus(response.GetStatus().String())
 	}
 }
