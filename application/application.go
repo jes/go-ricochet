@@ -30,6 +30,9 @@ func (ra *RicochetApplication) Init(name string, pk *rsa.PrivateKey, af Applicat
 	ra.privateKey = pk
 	ra.aif = af
 	ra.contactManager = cm
+	ra.MakeContactHandler = func(*ApplicationInstance) channels.ContactRequestChannelHandler {
+		return new(AcceptAllContactHandler)
+	}
 }
 
 // TODO: Reimplement OnJoin, OnLeave Events.
