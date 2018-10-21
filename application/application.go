@@ -14,14 +14,15 @@ import (
 // RicochetApplication bundles many useful constructs that are
 // likely standard in a ricochet application
 type RicochetApplication struct {
-	contactManager ContactManagerInterface
-	privateKey     *rsa.PrivateKey
-	name           string
-	l              net.Listener
-	instances      []*ApplicationInstance
-	lock           sync.Mutex
-	aif            ApplicationInstanceFactory
-	OnNewPeer      func(*ApplicationInstance, string)
+	contactManager     ContactManagerInterface
+	privateKey         *rsa.PrivateKey
+	name               string
+	l                  net.Listener
+	instances          []*ApplicationInstance
+	lock               sync.Mutex
+	aif                ApplicationInstanceFactory
+	OnNewPeer          func(*ApplicationInstance, string)
+	MakeContactHandler func(*ApplicationInstance) channels.ContactRequestChannelHandler
 }
 
 func (ra *RicochetApplication) Init(name string, pk *rsa.PrivateKey, af ApplicationInstanceFactory, cm ContactManagerInterface) {
@@ -86,7 +87,7 @@ func (ra *RicochetApplication) Open(onionAddress string, requestMessage string) 
 		err := rc.Do(func() error {
 			_, err := rc.RequestOpenChannel("im.ricochet.contact.request",
 				&channels.ContactRequestChannel{
-					Handler: new(AcceptAllContactHandler),
+					Handler: ra.MakeContactHandler(rai),
 					Name:    ra.name,
 					Message: requestMessage,
 				})
