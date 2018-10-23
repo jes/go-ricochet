@@ -51,7 +51,7 @@ func (och *OutboundConnectionHandler) ProcessAuthAsClient(identity identity.Iden
 		// Cause the Process() call below to return.
 		// If Break() is called from here, it _must_ use go, because this will
 		// execute in the Process goroutine, and Break() will deadlock.
-		breakOnce.Do(func() { och.connection.Break() })
+		breakOnce.Do(func() { go och.connection.Break() })
 	}
 
 	processResult := make(chan error, 1)
