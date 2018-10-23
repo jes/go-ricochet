@@ -19,34 +19,23 @@ const (
 // The supported types are onions address are:
 //  * ricochet:jlq67qzo6s4yp3sp
 //  * jlq67qzo6s4yp3sp
-//  * 127.0.0.1:55555|jlq67qzo6s4yp3sp - Localhost Connection
 type NetworkResolver struct {
+	SOCKSProxy string
 }
 
 // Resolve takes a hostname and returns a net.Conn to the derived endpoint
 func (nr *NetworkResolver) Resolve(hostname string) (net.Conn, string, error) {
-	if strings.HasPrefix(hostname, "127.0.0.1") {
-		addrParts := strings.Split(hostname, "|")
-		tcpAddr, err := net.ResolveTCPAddr("tcp", addrParts[0])
-		if err != nil {
-			return nil, "", CannotResolveLocalTCPAddressError
-		}
-		conn, err := net.DialTCP("tcp", nil, tcpAddr)
-		if err != nil {
-			return nil, "", CannotDialLocalTCPAddressError
-		}
-
-		// return just the onion address, not the local override for the hostname
-		return conn, addrParts[1], nil
-	}
-
 	resolvedHostname := hostname
 	if strings.HasPrefix(hostname, "ricochet:") {
 		addrParts := strings.Split(hostname, ":")
 		resolvedHostname = addrParts[1]
 	}
 
-	torDialer, err := proxy.SOCKS5("tcp", "127.0.0.1:9050", nil, proxy.Direct)
+	proxy := nr.SOCKSProxy
+	if proxy == nil {
+		proxy = "127.0.0.1:9050"
+	}
+	torDialer, err := proxy.SOCKS5("tcp", SOCKSProxy, nil, proxy.Direct)
 	if err != nil {
 		return nil, "", err
 	}
