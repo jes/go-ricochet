@@ -31,11 +31,11 @@ func (nr *NetworkResolver) Resolve(hostname string) (net.Conn, string, error) {
 		resolvedHostname = addrParts[1]
 	}
 
-	proxy := nr.SOCKSProxy
-	if proxy == nil {
-		proxy = "127.0.0.1:9050"
+	socksProxy := nr.SOCKSProxy
+	if socksProxy == "" {
+		socksProxy = "127.0.0.1:9050"
 	}
-	torDialer, err := proxy.SOCKS5("tcp", SOCKSProxy, nil, proxy.Direct)
+	torDialer, err := proxy.SOCKS5("tcp", socksProxy, nil, proxy.Direct)
 	if err != nil {
 		return nil, "", err
 	}

@@ -13,6 +13,10 @@ import (
 // The application should call Process() on the returned OpenConnection to continue
 // handling protocol messages.
 func Open(remoteHostname string) (*connection.Connection, error) {
+	return OpenWithProxy(remoteHostname, "127.0.0.1:9050")
+}
+
+func OpenWithProxy(remoteHostname string, proxy string) (*connection.Connection, error) {
 	networkResolver := utils.NetworkResolver{}
 	conn, remoteHostname, err := networkResolver.Resolve(remoteHostname)
 
