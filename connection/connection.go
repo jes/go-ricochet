@@ -33,6 +33,8 @@ type Connection struct {
 	messageBuilder utils.MessageBuilder
 	trace          bool
 
+	WaitForBreak bool
+
 	closed  bool
 	closing bool
 	// This mutex is exclusively for preventing races during blocking
@@ -290,6 +292,17 @@ func (rc *Connection) Process(handler Handler) error {
 	// returns.
 	for {
 
+		// XXX: we're waiting for the breakChannel to be signalled and don't want to
+		// do anything else because it might result in us rejecting an open channel
+		// request right before the handler for that channel gets created
+		if rc.WaitForBreak {
+			<-rc.breakChannel
+			rc.WaitForBreak = false
+			rc.traceLog("process has ended after break")
+			rc.breakResultChannel <- nil
+			return nil
+		}
+
 		var packet utils.RicochetData
 		select {
 		case <-rc.unlockChannel:
@@ -403,7 +416,7 @@ func (rc *Connection) controlPacket(handler Handler, res *Protocol_Data_Control.
 		}
 		// Send Error Packet
 		response := rc.messageBuilder.RejectOpenChannel(opm.GetChannelIdentifier(), errorText)
-		rc.traceLog(fmt.Sprintf("sending reject open channel for %v", opm.GetChannelIdentifier()))
+		rc.traceLog(fmt.Sprintf("sending reject open channel for %v: %v: %v", opm.GetChannelIdentifier(), opm.GetChannelType(), errorText))
 		rc.SendRicochetPacket(rc.Conn, 0, response)
 
 	} else if res.GetChannelResult() != nil {

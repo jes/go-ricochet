@@ -1,6 +1,7 @@
 package connection
 
 import (
+	"fmt"
 	"github.com/jes/go-ricochet/channels"
 	"github.com/jes/go-ricochet/utils"
 )
@@ -49,6 +50,7 @@ func (ach *AutoConnectionHandler) GetSupportedChannelTypes() []string {
 
 // RegisterChannelHandler ...
 func (ach *AutoConnectionHandler) RegisterChannelHandler(ctype string, handler func() channels.Handler) {
+	fmt.Println("RegisterChannelHandler: " + ctype)
 	_, exists := ach.handlerMap[ctype]
 	if !exists {
 		ach.handlerMap[ctype] = handler

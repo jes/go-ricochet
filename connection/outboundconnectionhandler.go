@@ -1,6 +1,7 @@
 package connection
 
 import (
+	"fmt"
 	"github.com/jes/go-ricochet/channels"
 	"github.com/jes/go-ricochet/identity"
 	"github.com/jes/go-ricochet/policies"
@@ -51,7 +52,11 @@ func (och *OutboundConnectionHandler) ProcessAuthAsClient(identity identity.Iden
 		// Cause the Process() call below to return.
 		// If Break() is called from here, it _must_ use go, because this will
 		// execute in the Process goroutine, and Break() will deadlock.
-		breakOnce.Do(func() { go och.connection.Break() })
+		fmt.Println("authCallback: Breaking Process loop")
+		breakOnce.Do(func() {
+			och.connection.WaitForBreak = true
+			go och.connection.Break()
+		})
 	}
 
 	processResult := make(chan error, 1)
