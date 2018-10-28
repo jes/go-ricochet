@@ -24,7 +24,7 @@ type RicochetApplication struct {
 	OnNewPeer          func(*ApplicationInstance, string)
 	OnAuthenticated    func(*ApplicationInstance, bool)
 	MakeContactHandler func(*ApplicationInstance) channels.ContactRequestChannelHandler
-    SOCKSProxy string
+	SOCKSProxy         string
 }
 
 func (ra *RicochetApplication) Init(name string, pk *rsa.PrivateKey, af ApplicationInstanceFactory, cm ContactManagerInterface) {
@@ -32,7 +32,7 @@ func (ra *RicochetApplication) Init(name string, pk *rsa.PrivateKey, af Applicat
 	ra.privateKey = pk
 	ra.aif = af
 	ra.contactManager = cm
-    ra.SOCKSProxy = "127.0.0.1:9050"
+	ra.SOCKSProxy = "127.0.0.1:9050"
 	ra.MakeContactHandler = func(*ApplicationInstance) channels.ContactRequestChannelHandler {
 		return new(AcceptAllContactHandler)
 	}
